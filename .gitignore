@@ -1,0 +1,17 @@
+# Data files - may contain sensitive customer information
+data/
+
+# Checkpoints
+*.checkpoint.json
+
+# Logs
+logs/
+
+# Python
+__pycache__/
+*.pyc
+.env
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

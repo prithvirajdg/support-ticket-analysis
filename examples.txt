@@ -1,0 +1,80 @@
+## Examples
+
+### Example 1
+TRANSCRIPT:
+Respected customer support team, we are currently dealing with a significant problem concerning our medical data server. The data appears to have vanished, and we suspect it could be due to human error or a software malfunction. We have tried to restart the server and examine our backups, but so far, we have not been able to retrieve the missing data. We would be highly grateful for your prompt help in addressing this issue. Kindly inform us of the steps we can take to resolve this matter as quickly as possible.
+
+OUTPUT:
+{"summarised_user_problem": "data is missing and can't be retrieved", "surface_symptom": "data appears to have vanished, and no efforts to retrieve are successful", "user_goal": "wants the data to be restored so he can see full data", "impact_type": "blocked", "domain": "data storage", "product_type": "database retrieval", "outage_scope": "all users"}
+
+---
+
+### Example 2
+TRANSCRIPT:
+Digital campaigns are not functioning properly. It is suspected that this is due to incompatible software updates. Attempts to resolve the issue through restarts and configuration checks have been made.
+
+OUTPUT:
+{"summarised_user_problem": "insufficient information", "surface_symptom": "digital campaigns aren't functioning properly", "user_goal": "insufficient information", "impact_type": "insufficient information", "domain": "software", "product_type": "marketing", "outage_scope": "insufficient information"}
+
+---
+
+### Example 3
+TRANSCRIPT:
+Hello customer support, I am encountering slow loading times on your website. This problem appeared recently and might be caused by high traffic. I attempted to reset the server and clear the cache but the issue still exists. I kindly request you to investigate this and offer a solution at your earliest convenience. Please inform me if you need further details from me to address this matter.
+
+OUTPUT:
+{"summarised_user_problem": "website is slow to load", "surface_symptom": "website is slow to load and nothing is improving the speed", "user_goal": "wants website to load at speed he is used to", "impact_type": "degraded", "domain": "connectivity", "product_type": "website", "outage_scope": "insufficient information"}
+
+---
+
+### Example 4
+TRANSCRIPT:
+The investment portfolio analysis tool encountered an issue during the routine update, which might be related to incompatible data formats.
+
+OUTPUT:
+{"summarised_user_problem": "insufficient information", "surface_symptom": "there is some issue with the investment portfolio analysis tool", "user_goal": "insufficient information", "impact_type": "insufficient information", "domain": "software", "product_type": "portfolio analysis", "outage_scope": "insufficient information"}
+
+---
+
+### Example 5
+TRANSCRIPT:
+Dear support team, we encountered a crash on our SaaS platform during workflow optimization. It's possible that there are Azure integration problems. We've tried restarting the servers and reviewing the system logs, but the issue remains unresolved. We kindly request your assistance in investigating this problem and offering a solution. Our team can supply any additional information necessary to address this issue.
+
+OUTPUT:
+{"summarised_user_problem": "saas platform is facing issues after attempting workflow optimisation", "surface_symptom": "there was a crash of the saas platform post which they're unable to use it", "user_goal": "restore it to normal working", "impact_type": "insufficient information", "domain": "software", "product_type": "saas platform", "outage_scope": "insufficient information"}
+
+---
+
+### Example 6
+TRANSCRIPT:
+I am contacting you to seek information on digital strategy options for brand growth that involve OLED-Monitor integration. I am curious to learn how this technology can improve customer engagement and boost brand awareness. Could you share details on strategies that have been effective in the past? I would be grateful for any suggestions or insights you can provide. Furthermore, I would like to understand the possible obstacles and constraints associated with adopting such a strategy. Thank you for your support and cooperation.
+
+OUTPUT:
+{"summarised_user_problem": "wants to know how our offering can boost their customer experience", "surface_symptom": "wants to find details on strategies that have led to improved customer engagement and brand awareness", "user_goal": "get the required information", "impact_type": "information", "domain": "hardware", "product_type": "monitor", "outage_scope": "not applicable"}
+
+---
+
+### Example 7
+TRANSCRIPT:
+A data leak has compromised medical records on Debian 10 Buster systems, potentially linked to a vulnerability in the Adobe Effects 2021 plugin.
+
+OUTPUT:
+{"summarised_user_problem": "wants to inform that a data leak has happened", "surface_symptom": "data leak has compromised medial records", "user_goal": "insufficient information", "impact_type": "blocked", "domain": "data storage", "product_type": "database access", "outage_scope": "all users"}
+
+---
+
+### Example 8
+TRANSCRIPT:
+Is there any information on the integration options available?
+
+OUTPUT:
+{"summarised_user_problem": "insufficient information", "surface_symptom": "insufficient information", "user_goal": "insufficient information", "impact_type": "insufficient information", "domain": "insufficient information", "product_type": "insufficient information", "outage_scope": "insufficient information"}
+
+---
+
+### Example 9
+TRANSCRIPT:
+Encountered: Unexpected denial of access to medical records. Potential indicators include server configuration errors or recent security updates. Efforts made: Restarted servers, reviewed logs, and confirmed user permissions. Urgently require help to address this issue. Kindly offer a solution or direct me to the appropriate troubleshooting measures.
+
+OUTPUT:
+{"summarised_user_problem": "has been denied access to records", "surface_symptom": "is denied access to records", "user_goal": "wants to access the records and wants issue preventing access fixed", "impact_type": "blocked", "domain": "data storage", "product_type": "database access", "outage_scope": "insufficient information"}
