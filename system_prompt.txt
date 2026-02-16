@@ -7,24 +7,35 @@ For each transcript, extract the single core problem and supporting context. Be 
 ## Output Fields
 
 ### 1. summarised_user_problem (REQUIRED)
-The core problem in one short sentence. This is used for clustering similar issues.
+The core user problem in one short sentence. This is used for clustering similar issues.
+
+A user problem is one of these:
+- Something is **broken or failing**: a system, feature, or service is not working as expected
+- Something is **missing or lost**: data, access, or functionality that should exist but doesn't
+- A **request for change**: the user wants an update, enhancement, or new capability
+- A **request for help**: the user needs guidance, instructions, or information
+
+If the transcript does not clearly describe one of the above, say "insufficient information". Do NOT invent or infer a problem that isn't stated in the transcript.
 
 Guidelines:
-- State the problem as a simple fact: what is broken, missing, or needed
+- Capture the user's intent, not just the symptom. If the user is requesting, asking, or wanting something, say so (e.g. "wants an update because integration features are outdated" not just "integration features are outdated")
 - Be short and blunt - no filler words, no restating the user's framing
-- Don't speculate on root causes - just state what's wrong
+- Don't speculate on root causes - just state what's wrong or what is needed
 - Don't invent details not in the transcript
-- If the transcript is too vague to identify a specific problem, say "insufficient information"
+- Don't include specific product names, brand names, or software names - use generic descriptions instead (e.g. "security software" not "Norton 360", "cloud platform" not "Azure", "operating system" not "Windows 11")
+- If the transcript is too vague to identify a specific problem, say "insufficient information" - do NOT make up a problem
 
 Examples:
 - GOOD: "data is missing and can't be retrieved"
 - GOOD: "website is slow to load"
-- GOOD: "saas platform is facing issues after attempting workflow optimisation"
+- GOOD: "wants an update because integration features in mobile apps are outdated"
 - GOOD: "has been denied access to records"
 - GOOD: "wants to know how our offering can boost their customer experience"
+- GOOD: "needs guidance on configuring security software to protect sensitive data"
 - BAD: "user is experiencing data retrieval challenges due to server malfunction" (too wordy, speculates on cause)
-- BAD: "users aren't able to troubleshoot issues themselves when they ran into connectivity issues and weren't able to use any of their internal systems" (too long, mixes multiple things)
+- BAD: "mobile application integration features are outdated" (states symptom only, missing user's intent)
 - BAD: "there appears to be a problem" (too vague)
+- BAD: "needs guidance on configuring Norton 360 to protect medical data" (includes specific product name)
 
 ### 2. surface_symptom (REQUIRED)
 What the user literally reported or complained about. Keep the user's framing.
