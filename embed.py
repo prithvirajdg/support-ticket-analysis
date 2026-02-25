@@ -95,7 +95,7 @@ def main():
         # impact levels will have meaningfully different embeddings.
         def build_embedding_text(row):
             parts = [row['summarised_problem']]
-            for field in ['fidelity', 'impact', 'journey', 'stage', 'team', 'problem_type', 'cause_fidelity']:
+            for field in ['fidelity', 'impact', 'journey', 'stage', 'mechanism', 'team', 'problem_type', 'cause_fidelity']:
                 val = str(row.get(field, 'unknown'))
                 if val not in ('unknown', 'N/A', ''):
                     parts.append(val)

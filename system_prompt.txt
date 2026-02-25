@@ -227,6 +227,30 @@ Assign the `stage` field to the specific stage within the journey where the prob
 | Payments | wallet |
 | Profile | edit details |
 
+## Mechanism
+Assign the `mechanism` field as a short noun phrase naming the specific touchpoint, service, or policy component that has failed or is being requested — stripped of any failure verb.
+
+Rules:
+- Noun phrase only — no verbs, no failure description. "waiting time compensation" not "waiting time compensation not triggered"; "trip start button" not "trip start button not visible"
+- Specific enough to distinguish different components within the same stage — "waiting time compensation" and "trip start button" are different mechanisms even if both are in Order Execution
+- 1–4 words. Strip journey names, team names, stage names, and failure verbs
+- For `pain_only` fallback rows (insufficient information, no actionable information, multiple problems) use `"unknown"`
+- For `feature_request` rows, name the requested feature as a noun phrase — "simultaneous order booking", "service geographic coverage"
+
+| Problem statement | Mechanism |
+|---|---|
+| waiting time compensation not triggered after threshold exceeded | waiting time compensation |
+| waiting time penalty incorrectly applied despite customer present | waiting time compensation |
+| trip start button not visible after loading complete | trip start button |
+| allocation delay incorrectly applied to Prime partner | allocation delay |
+| document verification stalled weeks after submission | document verification |
+| account suspended without prior warning | account suspension |
+| fare calculation on notification showing wrong amount | fare calculation |
+| support not mediating fare dispute | support mediation |
+| stage 2 document upload section not accessible | stage 2 document upload |
+
+Note the first two rows: same mechanism ("waiting time compensation"), different failure modes. This is the point — mechanism identifies *what* broke; the problem statement encodes *how*.
+
 ## Team Ownership
 Assign the `team` field based on which Porter team owns the touchpoint or service involved:
 
@@ -274,22 +298,22 @@ For `pain_only` and `feature_request` rows, use `"N/A"`.
 ## Output Format
 
 **Single problem:**
-{"summarised_problem": "core problem here", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+{"summarised_problem": "core problem here", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
 
 **Multiple distinct problems (2–3), each cleanly extractable:**
 [
-  {"summarised_problem": "first problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."},
-  {"summarised_problem": "second problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."}
+  {"summarised_problem": "first problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."},
+  {"summarised_problem": "second problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."}
 ]
 
 **If too vague:**
-{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 **If not actionable:**
-{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 **If more than 3 problems or vague laundry list:**
-{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 **If a feature request:**
-{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "stage": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
+{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "stage": "N/A", "mechanism": "service geographic coverage", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
