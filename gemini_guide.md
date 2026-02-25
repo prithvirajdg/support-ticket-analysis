@@ -74,7 +74,7 @@ Open a **new conversation** with your `Porter Review Analyser` Gem. Paste this m
 ```
 Process the following review summaries. For each summary, output one CSV row with these columns in this exact order — no header row, data rows only:
 
-index,summarised_problem,fidelity,journey,stage,mechanism,team,problem_type,impact,cause_fidelity
+index,summarised_problem,fidelity,journey,stage,mechanism,failure_mode,team,problem_type,impact,cause_fidelity
 
 Use the index number shown in the SUMMARY label. If a summary contains 2–3 distinct extractable problems with different teams and touchpoints, output one row per problem using the same index number. Wrap any value that contains a comma in double quotes.
 
@@ -85,9 +85,9 @@ Use the index number shown in the SUMMARY label. If a summary contains 2–3 dis
 
 Create a **Results** tab in your spreadsheet with this header row:
 
-| A | B | C | D | E | F | G | H | I | J |
-|---|---|---|---|---|---|---|---|---|---|
-| index | summarised_problem | fidelity | journey | stage | mechanism | team | problem_type | impact | cause_fidelity |
+| A | B | C | D | E | F | G | H | I | J | K |
+|---|---|---|---|---|---|---|---|---|---|---|
+| index | summarised_problem | fidelity | journey | stage | mechanism | failure_mode | team | problem_type | impact | cause_fidelity |
 
 Copy Gemini's response (all CSV rows) and paste starting at row 2. The columns will match exactly.
 
@@ -103,7 +103,7 @@ After pasting all batches, insert a column after H and name it `body`. Look up t
 
 Replace `input_sheet` with the actual tab name where your index and body columns are.
 
-Your Results sheet now has 11 columns: index, summarised_problem, fidelity, journey, stage, mechanism, team, problem_type, impact, cause_fidelity, body.
+Your Results sheet now has 12 columns: index, summarised_problem, fidelity, journey, stage, mechanism, failure_mode, team, problem_type, impact, cause_fidelity, body.
 
 ### Step 6 — Repeat for all batches
 
@@ -129,23 +129,23 @@ In the Cluster Input tab, insert a column at the start (shift everything right) 
 
 Your Cluster Input tab columns are now:
 
-| A | B | C | D | E | F | G | H | I | J | K |
-|---|---|---|---|---|---|---|---|---|---|---|
-| row_id | index | summarised_problem | fidelity | journey | stage | mechanism | team | problem_type | impact | cause_fidelity |
+| A | B | C | D | E | F | G | H | I | J | K | L |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| row_id | index | summarised_problem | fidelity | journey | stage | mechanism | failure_mode | team | problem_type | impact | cause_fidelity |
 
 ### Step 3 — Build the problem list for clustering
 
-Add a formula column (column L) with this formula and drag it down:
+Add a formula column (column M) with this formula and drag it down:
 
 ```
-=A2&" | "&C2&" | "&D2&" | "&E2&" | "&F2&" | "&G2&" | "&H2&" | "&J2
+=A2&" | "&C2&" | "&D2&" | "&E2&" | "&F2&" | "&G2&" | "&H2&" | "&I2&" | "&K2
 ```
 
 This produces lines like:
 
 ```
-1 | waiting time compensation not triggered after threshold exceeded at pickup | pain_and_touchpoint | Order Execution | coordinate loading | waiting time compensation | LFC | financial_loss
-2 | account suspended without prior warning or investigation | pain_and_touchpoint | Account & Compliance | suspension | account suspension | LFC | blocked
+1 | waiting time compensation not triggered after threshold exceeded at pickup | pain_and_touchpoint | Order Execution | coordinate loading | waiting time compensation | not triggered | LFC | financial_loss
+2 | account suspended without prior warning or investigation | pain_and_touchpoint | Account & Compliance | suspension | account suspension | incorrectly triggered | LFC | blocked
 ```
 
 Select all rows of column J and copy.

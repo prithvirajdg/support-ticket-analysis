@@ -50,9 +50,10 @@ porter_reviews.py          →  raw CSVs (Play Store reviews)
 │  - Concurrent API calls via ThreadPoolExecutor             │
 │  - Checkpoint/resume capability                            │
 │  - Input: body (narrative summary from batch_summarize)    │
-│  - Output: 9-field structured JSON per problem             │
+│  - Output: 10-field structured JSON per problem            │
 │    - summarised_problem, fidelity, journey, stage,         │
-│      mechanism, team, problem_type, impact, cause_fidelity │
+│      mechanism, failure_mode, team, problem_type,          │
+│      impact, cause_fidelity                                │
 │  - Multi-problem reviews exploded into one row per problem │
 │  - Files: system_prompt.txt, examples.txt                  │
 └─────────────────────────────────────────────────────────────┘
@@ -145,6 +146,7 @@ Gemini returns (via JSON mode) either a single object or an array of objects:
   "journey": "Order Allocation | Order Execution | Payments | ...",
   "stage": "coordinate loading | document approval | allocation delay | ... | unknown | N/A",
   "mechanism": "waiting time compensation | document verification | allocation delay | trip start button | ... | unknown",
+  "failure_mode": "not triggered | incorrectly triggered | delayed | wrong output | blocked | no feedback | does not exist | not communicated | incorrectly attributed | not discoverable | inconsistently applied | unknown | N/A",
   "team": "LFC | Marketplace | TNS | CGE | HSC | unknown",
   "problem_type": "touchpoint_app | touchpoint_ops | service | policy | service/policy | touchpoint_app/service | touchpoint_ops/policy | unknown",
   "impact": "financial_loss | blocked | inconvenienced | informative | unknown",
@@ -343,11 +345,12 @@ Go to **GCP Console → Vertex AI → Workbench** and click **STOP**. A running 
 - Makes clustering faster and more accurate
 - Preserves semantic relationships
 
-### Why 9 fields instead of 1?
+### Why 10 fields instead of 1?
 - `summarised_problem` is the core clustering text
 - `fidelity` lets you filter to only `pain_and_touchpoint` rows for deep investigation
 - `journey`, `stage`, `team`, `problem_type` enable PM/leadership to quickly route and prioritise clusters without reading every problem statement; `stage` is more granular than `journey` and separates problems that share a journey but occur at different steps
-- `mechanism` is a noun phrase naming the specific component that broke ("waiting time compensation", "allocation delay", "trip start button") — stripped of the failure verb; two problems with the same mechanism but different failure modes share this value and can be split at the clustering stage rather than merged
+- `mechanism` is a noun phrase naming the specific component that broke ("waiting time compensation", "allocation delay", "trip start button") — stripped of the failure verb
+- `failure_mode` is the verb that pairs with mechanism ("not triggered", "incorrectly triggered", "delayed") — together `mechanism` + `failure_mode` uniquely define a cluster; same mechanism + different failure mode = always different clusters, different fixes
 - `impact` lets you triage by severity — `blocked` and `financial_loss` rows surface first
 - `cause_fidelity` signals whether the root cause is known (actionable immediately) or needs investigation
 - All 9 fields are embedded together as a structured string — metadata provides hard structural separation between problems in the same touchpoint area

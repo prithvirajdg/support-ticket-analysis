@@ -5,7 +5,7 @@ SUMMARY:
 partner relies on Porter orders to meet daily targets but has noticed the number of orders has significantly decreased. partner claims that customers say orders don't get placed promptly or get cancelled after being placed, and this has occurred multiple times. partner is concerned about when this problem will be resolved.
 
 OUTPUT:
-{"summarised_problem": "order frequency has significantly dropped", "fidelity": "pain_only", "journey": "Order Allocation", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "financial_loss", "cause_fidelity": "N/A"}
+{"summarised_problem": "order frequency has significantly dropped", "fidelity": "pain_only", "journey": "Order Allocation", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "financial_loss", "cause_fidelity": "N/A"}
 
 ---
 
@@ -14,7 +14,7 @@ SUMMARY:
 partner feels that his earnings are getting affected because bike and scooty are clubbed together under 2-wheeler with the same fare, but scooty mileage is 35-40 km/litre vs bike at 60-70 km/litre, so scooty partners spend more on fuel for the same pay
 
 OUTPUT:
-{"summarised_problem": "scooty and bike assigned same fare despite higher fuel costs for scooty", "fidelity": "pain_and_touchpoint", "journey": "Order Allocation", "stage": "fare calculation for notification", "mechanism": "2-wheeler fare policy", "team": "Marketplace", "problem_type": "policy", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+{"summarised_problem": "scooty and bike assigned same fare despite higher fuel costs for scooty", "fidelity": "pain_and_touchpoint", "journey": "Order Allocation", "stage": "fare calculation for notification", "mechanism": "2-wheeler fare policy", "failure_mode": "wrong output", "team": "Marketplace", "problem_type": "policy", "impact": "financial_loss", "cause_fidelity": "cause_known"}
 
 ---
 
@@ -23,7 +23,7 @@ SUMMARY:
 partner feels that despite working hard and generating money for the company, their problems are not being resolved, and criticizes the call center customer care service as poor
 
 OUTPUT:
-{"summarised_problem": "partner issues not being resolved", "fidelity": "pain_only", "journey": "Customer Support", "stage": "N/A", "mechanism": "unknown", "team": "TNS", "problem_type": "touchpoint_ops", "impact": "inconvenienced", "cause_fidelity": "N/A"}
+{"summarised_problem": "partner issues not being resolved", "fidelity": "pain_only", "journey": "Customer Support", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "TNS", "problem_type": "touchpoint_ops", "impact": "inconvenienced", "cause_fidelity": "N/A"}
 
 ---
 
@@ -32,7 +32,7 @@ SUMMARY:
 partner complains that the app system speed is slow and makes work horrible
 
 OUTPUT:
-{"summarised_problem": "app speed is slow affecting partner's work", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "touchpoint_app", "impact": "inconvenienced", "cause_fidelity": "N/A"}
+{"summarised_problem": "app speed is slow affecting partner's work", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "touchpoint_app", "impact": "inconvenienced", "cause_fidelity": "N/A"}
 
 ---
 
@@ -41,7 +41,7 @@ SUMMARY:
 partner reports that the driver app is not working correctly and has multiple technical issues including location tracking problems, update failures, calling/confirm option malfunctions, pickup distance calculation errors, and timing/seconds display issues
 
 OUTPUT:
-{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 ---
 
@@ -50,7 +50,7 @@ SUMMARY:
 partner is expressing displeasure that Porter doesn't help in cases where the fare increases due to waiting time but customer refuses to pay the updated fare, and puts the responsibility of recovering fare on partner
 
 OUTPUT:
-{"summarised_problem": "waiting time charges not collectible when customer disputes updated fare", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time charges", "team": "LFC", "problem_type": "service/policy", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+{"summarised_problem": "waiting time charges not collectible when customer disputes updated fare", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time charges", "failure_mode": "does not exist", "team": "LFC", "problem_type": "service/policy", "impact": "financial_loss", "cause_fidelity": "cause_known"}
 
 ---
 
@@ -59,7 +59,7 @@ SUMMARY:
 partner reports neither good nor bad experience
 
 OUTPUT:
-{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 ---
 
@@ -68,7 +68,7 @@ SUMMARY:
 partner feels that drivers are being cheated due to 20% commission and frequent suspensions, and warns that a protest will happen soon
 
 OUTPUT:
-{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 ---
 
@@ -77,7 +77,7 @@ SUMMARY:
 partner complains that earnings have reduced and feels that Porter support is biased — they always blame the partner for issues but never hold customers accountable, and have suspended his ID for a day for an alleged mistake
 
 OUTPUT:
-{"summarised_problem": "account suspended without investigation of the alleged incident", "fidelity": "pain_and_touchpoint", "journey": "Account & Compliance", "stage": "suspension", "mechanism": "account suspension", "team": "LFC", "problem_type": "touchpoint_ops/policy", "impact": "blocked", "cause_fidelity": "cause_unknown"}
+{"summarised_problem": "account suspended without investigation of the alleged incident", "fidelity": "pain_and_touchpoint", "journey": "Account & Compliance", "stage": "suspension", "mechanism": "account suspension", "failure_mode": "incorrectly triggered", "team": "LFC", "problem_type": "touchpoint_ops/policy", "impact": "blocked", "cause_fidelity": "cause_unknown"}
 
 ---
 
@@ -87,8 +87,8 @@ partner is upset that the app showed a fare of 213 rupees but the customer is on
 
 OUTPUT:
 [
-  {"summarised_problem": "customer not paying full fare shown on app", "fidelity": "pain_and_touchpoint", "journey": "Payments", "stage": "unknown", "mechanism": "fare collection", "team": "Marketplace", "problem_type": "service/policy", "impact": "financial_loss", "cause_fidelity": "cause_known"},
-  {"summarised_problem": "support failing to mediate fare dispute between partner and customer", "fidelity": "pain_and_touchpoint", "journey": "Customer Support", "stage": "contact support", "mechanism": "support mediation", "team": "TNS", "problem_type": "touchpoint_ops", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+  {"summarised_problem": "customer not paying full fare shown on app", "fidelity": "pain_and_touchpoint", "journey": "Payments", "stage": "unknown", "mechanism": "fare collection", "failure_mode": "not triggered", "team": "Marketplace", "problem_type": "service/policy", "impact": "financial_loss", "cause_fidelity": "cause_known"},
+  {"summarised_problem": "support failing to mediate fare dispute between partner and customer", "fidelity": "pain_and_touchpoint", "journey": "Customer Support", "stage": "contact support", "mechanism": "support mediation", "failure_mode": "not triggered", "team": "TNS", "problem_type": "touchpoint_ops", "impact": "financial_loss", "cause_fidelity": "cause_known"}
 ]
 
 ---
@@ -98,7 +98,7 @@ SUMMARY:
 partner is expressing strong dissatisfaction with Porter, calling it a useless app where people's money is being taken advantage of, warns others not to use it, and says customer care service in Kota is poor
 
 OUTPUT:
-{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 ---
 
@@ -107,7 +107,7 @@ SUMMARY:
 partner finds the app system confusing and complains that work gets disrupted daily due to last-minute order cancellations
 
 OUTPUT:
-{"summarised_problem": "last-minute order cancellations disrupting partner's work", "fidelity": "pain_and_touchpoint", "journey": "Cancellations", "stage": "unknown", "mechanism": "order cancellation", "team": "LFC", "problem_type": "service/policy", "impact": "inconvenienced", "cause_fidelity": "cause_unknown"}
+{"summarised_problem": "last-minute order cancellations disrupting partner's work", "fidelity": "pain_and_touchpoint", "journey": "Cancellations", "stage": "unknown", "mechanism": "order cancellation", "failure_mode": "incorrectly triggered", "team": "LFC", "problem_type": "service/policy", "impact": "inconvenienced", "cause_fidelity": "cause_unknown"}
 
 ---
 
@@ -116,7 +116,7 @@ SUMMARY:
 partner submitted all required onboarding documents three weeks ago but the verification is still not complete, the process is extremely slow and there has been no movement
 
 OUTPUT:
-{"summarised_problem": "document verification not progressing weeks after submission", "fidelity": "pain_and_touchpoint", "journey": "Onboarding", "stage": "document approval", "mechanism": "document verification", "team": "LFC", "problem_type": "touchpoint_ops", "impact": "blocked", "cause_fidelity": "cause_unknown"}
+{"summarised_problem": "document verification not progressing weeks after submission", "fidelity": "pain_and_touchpoint", "journey": "Onboarding", "stage": "document approval", "mechanism": "document verification", "failure_mode": "delayed", "team": "LFC", "problem_type": "touchpoint_ops", "impact": "blocked", "cause_fidelity": "cause_unknown"}
 
 ---
 
@@ -125,7 +125,7 @@ SUMMARY:
 partner submitted onboarding documents but received no confirmation that they were received, and has no way of knowing whether verification has started or what the current status is
 
 OUTPUT:
-{"summarised_problem": "no acknowledgement or status update received after document submission", "fidelity": "pain_and_touchpoint", "journey": "Onboarding", "stage": "documents submitted", "mechanism": "document submission status", "team": "LFC", "problem_type": "touchpoint_ops", "impact": "inconvenienced", "cause_fidelity": "cause_unknown"}
+{"summarised_problem": "no acknowledgement or status update received after document submission", "fidelity": "pain_and_touchpoint", "journey": "Onboarding", "stage": "documents submitted", "mechanism": "document submission status", "failure_mode": "no feedback", "team": "LFC", "problem_type": "touchpoint_ops", "impact": "inconvenienced", "cause_fidelity": "cause_unknown"}
 
 ---
 
@@ -134,7 +134,7 @@ SUMMARY:
 partner waited over an hour at the pickup location for the customer but received no waiting time compensation despite clearly exceeding the threshold
 
 OUTPUT:
-{"summarised_problem": "waiting time compensation not triggered after threshold exceeded at pickup", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_unknown"}
+{"summarised_problem": "waiting time compensation not triggered after threshold exceeded at pickup", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "failure_mode": "not triggered", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_unknown"}
 
 ---
 
@@ -143,7 +143,7 @@ SUMMARY:
 partner received a waiting time penalty deduction even though the customer was already present at the pickup location and there was no waiting involved
 
 OUTPUT:
-{"summarised_problem": "waiting time penalty applied despite customer being present at pickup", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+{"summarised_problem": "waiting time penalty applied despite customer being present at pickup", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "failure_mode": "incorrectly triggered", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
 
 ---
 
@@ -152,7 +152,7 @@ SUMMARY:
 partner requests that Porter expand its services to their city, saying there is strong demand for logistics in the area and many drivers would benefit
 
 OUTPUT:
-{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "stage": "N/A", "mechanism": "service geographic coverage", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
+{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "stage": "N/A", "mechanism": "service geographic coverage", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
 
 ---
 
@@ -161,4 +161,4 @@ SUMMARY:
 partner suggests that the app should allow booking multiple orders at the same time so that partners can increase their earnings during peak hours
 
 OUTPUT:
-{"summarised_problem": "multiple simultaneous order booking not supported in app", "fidelity": "feature_request", "journey": "Order Acceptance", "stage": "N/A", "mechanism": "simultaneous order booking", "team": "Marketplace", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
+{"summarised_problem": "multiple simultaneous order booking not supported in app", "fidelity": "feature_request", "journey": "Order Acceptance", "stage": "N/A", "mechanism": "simultaneous order booking", "failure_mode": "N/A", "team": "Marketplace", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}

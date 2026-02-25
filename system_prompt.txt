@@ -251,6 +251,17 @@ Rules:
 
 Note the first two rows: same mechanism ("waiting time compensation"), different failure modes. This is the point — mechanism identifies *what* broke; the problem statement encodes *how*.
 
+## Failure Mode
+Assign the `failure_mode` field using one of the values from the failure mode table in the Guidelines section. This is the "how it broke" — the verb that pairs with the mechanism.
+
+- For `pain_only` and `feature_request` rows, use `"N/A"`
+- For `pain_and_touchpoint` rows where the failure mode is genuinely ambiguous (the Guidelines say to describe the outcome neutrally), use `"unknown"`
+- For `pain_and_touchpoint` rows where the failure mode is clear, use the exact lowercase value from the table
+
+Valid values: `delayed`, `incorrectly triggered`, `not triggered`, `wrong output`, `blocked`, `incorrectly attributed`, `does not exist`, `not discoverable`, `no feedback`, `not communicated`, `inconsistently applied`, `unknown`, `N/A`
+
+Note: `mechanism` + `failure_mode` together define a cluster. "waiting time compensation" + "not triggered" is a different cluster from "waiting time compensation" + "incorrectly triggered" — they need different fixes even though they share the same mechanism.
+
 ## Team Ownership
 Assign the `team` field based on which Porter team owns the touchpoint or service involved:
 
@@ -298,22 +309,22 @@ For `pain_only` and `feature_request` rows, use `"N/A"`.
 ## Output Format
 
 **Single problem:**
-{"summarised_problem": "core problem here", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+{"summarised_problem": "core problem here", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "failure_mode": "not triggered", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
 
 **Multiple distinct problems (2–3), each cleanly extractable:**
 [
-  {"summarised_problem": "first problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."},
-  {"summarised_problem": "second problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."}
+  {"summarised_problem": "first problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "failure_mode": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."},
+  {"summarised_problem": "second problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "failure_mode": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."}
 ]
 
 **If too vague:**
-{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 **If not actionable:**
-{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 **If more than 3 problems or vague laundry list:**
-{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 **If a feature request:**
-{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "stage": "N/A", "mechanism": "service geographic coverage", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
+{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "stage": "N/A", "mechanism": "service geographic coverage", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
