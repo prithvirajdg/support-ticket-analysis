@@ -1,5 +1,5 @@
 Below are problem statements extracted from Porter user reviews.
-Each line is: row_id | summarised_problem | fidelity | journey | team | impact
+Each line is: row_id | summarised_problem | fidelity | journey | stage | team | impact
 
 Group them into atomic clusters where each cluster represents exactly one
 specific underlying problem — same mechanism, same failure mode.
@@ -9,7 +9,7 @@ specific underlying problem — same mechanism, same failure mode.
 WHAT BELONGS IN THE SAME CLUSTER
 
 Two problems belong in the same cluster only when ALL of these are true:
-- Same journey and same team
+- Same journey, same stage, and same team
 - Same specific mechanism — "waiting time compensation trigger" is a
   mechanism; "Order Execution" is not
 - Same failure mode, OR both are outcome descriptions of the same mechanism
@@ -81,5 +81,5 @@ Output a CSV table with three columns, including a header row:
 row_id,cluster_id,cluster_name
 
 PROBLEMS:
-1 | waiting time compensation not triggered after threshold exceeded at pickup | pain_and_touchpoint | Order Execution | LFC | financial_loss
-2 | account suspended without prior warning or investigation | pain_and_touchpoint | Account & Compliance | LFC | blocked
+1 | waiting time compensation not triggered after threshold exceeded at pickup | pain_and_touchpoint | Order Execution | coordinate loading | LFC | financial_loss
+2 | account suspended without prior warning or investigation | pain_and_touchpoint | Account & Compliance | suspension | LFC | blocked

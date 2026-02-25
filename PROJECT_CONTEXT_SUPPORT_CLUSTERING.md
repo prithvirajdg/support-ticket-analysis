@@ -50,8 +50,8 @@ porter_reviews.py          →  raw CSVs (Play Store reviews)
 │  - Concurrent API calls via ThreadPoolExecutor             │
 │  - Checkpoint/resume capability                            │
 │  - Input: body (narrative summary from batch_summarize)    │
-│  - Output: 7-field structured JSON per problem             │
-│    - summarised_problem, fidelity, journey, team,          │
+│  - Output: 8-field structured JSON per problem             │
+│    - summarised_problem, fidelity, journey, stage, team,   │
 │      problem_type, impact, cause_fidelity                  │
 │  - Multi-problem reviews exploded into one row per problem │
 │  - Files: system_prompt.txt, examples.txt                  │
@@ -143,6 +143,7 @@ Gemini returns (via JSON mode) either a single object or an array of objects:
   "summarised_problem": "short core problem statement for clustering",
   "fidelity": "pain_only | pain_and_touchpoint | feature_request",
   "journey": "Order Allocation | Order Execution | Payments | ...",
+  "stage": "coordinate loading | document approval | allocation delay | ... | unknown | N/A",
   "team": "LFC | Marketplace | TNS | CGE | HSC | unknown",
   "problem_type": "touchpoint_app | touchpoint_ops | service | policy | service/policy | touchpoint_app/service | touchpoint_ops/policy | unknown",
   "impact": "financial_loss | blocked | inconvenienced | informative | unknown",
@@ -341,13 +342,13 @@ Go to **GCP Console → Vertex AI → Workbench** and click **STOP**. A running 
 - Makes clustering faster and more accurate
 - Preserves semantic relationships
 
-### Why 7 fields instead of 1?
+### Why 8 fields instead of 1?
 - `summarised_problem` is the core clustering text
 - `fidelity` lets you filter to only `pain_and_touchpoint` rows for deep investigation
-- `journey`, `team`, `problem_type` enable PM/leadership to quickly route and prioritise clusters without reading every problem statement
+- `journey`, `stage`, `team`, `problem_type` enable PM/leadership to quickly route and prioritise clusters without reading every problem statement; `stage` is more granular than `journey` and separates problems that share a journey but occur at different steps
 - `impact` lets you triage by severity — `blocked` and `financial_loss` rows surface first
 - `cause_fidelity` signals whether the root cause is known (actionable immediately) or needs investigation
-- All 7 fields are embedded together as a structured string — metadata provides hard structural separation between problems in the same touchpoint area
+- All 8 fields are embedded together as a structured string — metadata provides hard structural separation between problems in the same touchpoint area
 - Multi-problem rows are exploded into one row per problem, so the output is fully flat and filterable
 
 ## Scaling Notes

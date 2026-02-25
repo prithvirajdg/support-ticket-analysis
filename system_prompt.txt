@@ -206,6 +206,27 @@ Assign the `journey` field from this list only. If the journey cannot be determi
 
 **Cross-Cutting:** Payments, Ratings, Cancellations
 
+## Stage
+Assign the `stage` field to the specific stage within the journey where the problem occurs, using the stage names from the partner side blueprint. Only partner-side journeys have defined stages.
+
+- For `pain_only` and `feature_request` rows, use `"N/A"`
+- For `pain_and_touchpoint` rows on customer-side or cross-cutting journeys (Ratings, Cancellations, customer-side Authentication through Trip Completion), use `"unknown"`
+- For `pain_and_touchpoint` partner-side rows where the stage cannot be determined from the review, use `"unknown"`
+
+| Journey | Valid stages |
+|---|---|
+| Onboarding | signup/login, document upload, vehicle details, driver details, documents submitted, document approval, training videos, registration fee, dummy order, stage 2 documents |
+| Ready to Take Orders | go online |
+| Order Allocation | receive order notification, fare calculation for notification, location information, allocation logic, allocation delay |
+| Order Acceptance | accept order, order assigned |
+| Order Execution | go to pickup, coordinate loading, edit order, start trip, coordinate drop location, coordinate unloading, cancel order |
+| Post Trip | trip fare calculation, payment collection |
+| Account & Compliance | suspension |
+| Performance | Prime, cancellation score |
+| Customer Support | contact support, communications |
+| Payments | wallet |
+| Profile | edit details |
+
 ## Team Ownership
 Assign the `team` field based on which Porter team owns the touchpoint or service involved:
 
@@ -253,22 +274,22 @@ For `pain_only` and `feature_request` rows, use `"N/A"`.
 ## Output Format
 
 **Single problem:**
-{"summarised_problem": "core problem here", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+{"summarised_problem": "core problem here", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
 
 **Multiple distinct problems (2–3), each cleanly extractable:**
 [
-  {"summarised_problem": "first problem", "fidelity": "pain_and_touchpoint", "journey": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."},
-  {"summarised_problem": "second problem", "fidelity": "pain_and_touchpoint", "journey": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."}
+  {"summarised_problem": "first problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."},
+  {"summarised_problem": "second problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."}
 ]
 
 **If too vague:**
-{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 **If not actionable:**
-{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 **If more than 3 problems or vague laundry list:**
-{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 **If a feature request:**
-{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
+{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "stage": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
