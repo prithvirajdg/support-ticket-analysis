@@ -1,6 +1,6 @@
 """
-Embed summarised user problems using sentence-transformers.
-Input: Parquet/CSV with 'summarised_user_problem' column (from disaggregate.py)
+Embed summarised problems using sentence-transformers.
+Input: Parquet/CSV with 'summarised_problem' column (from disaggregate.py)
 Output: Parquet with original data + embedding vectors
 
 Usage:
@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 def main():
     parser = argparse.ArgumentParser(description='Embed summarised user problems')
-    parser.add_argument('input', help='Input Parquet/CSV with summarised_user_problem column')
+    parser.add_argument('input', help='Input Parquet/CSV with summarised_problem column')
     parser.add_argument('output', help='Output Parquet file with embeddings')
     parser.add_argument('--batch-size', type=int, default=256, help='Embedding batch size (default: 256)')
     args = parser.parse_args()
@@ -58,38 +58,51 @@ def main():
         logger.info(f"Loaded {len(df)} rows")
 
         # Validate required column
-        validate_columns(df, ['summarised_user_problem'], "embed", logger)
+        validate_columns(df, ['summarised_problem'], "embed", logger)
         tracker.checkpoint("Data loaded", len(df))
 
-        # Filter out NA and error summaries (no actionable problem)
+        # Filter out rows that cannot be clustered
+        SKIP_VALUES = {
+            'NA', 'PARSE_ERROR', 'API_ERROR', 'ERROR',
+            'insufficient information', 'no actionable information',
+            'multiple problems - to be broken down'
+        }
         valid_mask = (
-            df['summarised_user_problem'].notna() &
-            (df['summarised_user_problem'] != 'NA') &
-            (df['summarised_user_problem'] != 'PARSE_ERROR') &
-            (df['summarised_user_problem'] != 'API_ERROR') &
-            (df['summarised_user_problem'] != 'ERROR')
+            df['summarised_problem'].notna() &
+            ~df['summarised_problem'].isin(SKIP_VALUES)
         )
         valid_df = df[valid_mask].copy()
         skipped = len(df) - len(valid_df)
 
         if skipped > 0:
-            logger.warning(f"Skipping {skipped} rows with NA/errors")
-            # Log a sample of skipped rows
+            logger.warning(f"Skipping {skipped} rows (errors or non-embeddable values)")
             skipped_df = df[~valid_mask]
             if len(skipped_df) > 0:
-                logger.debug(f"Sample skipped values: {skipped_df['summarised_user_problem'].head(5).tolist()}")
+                logger.debug(f"Sample skipped values: {skipped_df['summarised_problem'].head(5).tolist()}")
 
         if len(valid_df) == 0:
             raise ValidationError(
-                "No valid rows to embed! All rows have NA or ERROR in summarised_user_problem. "
+                "No valid rows to embed! All rows have errors or non-embeddable values in summarised_problem. "
                 "Check disaggregation step for issues."
             )
 
         logger.info(f"Embedding {len(valid_df)} valid summaries...")
         tracker.checkpoint("Filtered valid rows", len(valid_df))
 
-        # Generate embeddings with progress
-        summaries = valid_df['summarised_user_problem'].tolist()
+        # Build structured embedding text combining summarised_problem with metadata.
+        # Including journey, team, fidelity etc. provides structural separation in
+        # embedding space — two problems with the same text but different journeys or
+        # impact levels will have meaningfully different embeddings.
+        def build_embedding_text(row):
+            parts = [row['summarised_problem']]
+            for field in ['fidelity', 'impact', 'journey', 'team', 'problem_type', 'cause_fidelity']:
+                val = str(row.get(field, 'unknown'))
+                if val not in ('unknown', 'N/A', ''):
+                    parts.append(val)
+            return ' | '.join(parts)
+
+        summaries = valid_df.apply(build_embedding_text, axis=1).tolist()
+        logger.info(f"Sample embedding text: {summaries[0][:120]}...")
         logger.info(f"Processing in batches of {args.batch_size}...")
 
         embeddings = model.encode(

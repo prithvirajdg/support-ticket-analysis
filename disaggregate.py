@@ -129,7 +129,7 @@ def disaggregate_one(
 
     try:
         response = model.generate_content(
-            f"TRANSCRIPT:\n{transcript}\n\nOUTPUT:",
+            f"SUMMARY:\n{transcript}\n\nOUTPUT:",
             generation_config=GenerationConfig(
                 max_output_tokens=1024,
                 temperature=0.0,
@@ -145,21 +145,19 @@ def disaggregate_one(
         output_tokens = usage.candidates_token_count
 
         try:
-            result = json.loads(result_text)
-            result['_input_tokens'] = input_tokens
-            result['_output_tokens'] = output_tokens
-            result['_row_idx'] = row_idx
-            result['_error'] = None
-            return result
+            parsed = json.loads(result_text)
+            # Normalise to always be a list of problems
+            problems = parsed if isinstance(parsed, list) else [parsed]
+            return {
+                'problems': problems,
+                '_input_tokens': input_tokens,
+                '_output_tokens': output_tokens,
+                '_row_idx': row_idx,
+                '_error': None
+            }
         except json.JSONDecodeError as e:
             return {
-                "summarised_user_problem": "PARSE_ERROR",
-                "surface_symptom": "PARSE_ERROR",
-                "user_goal": "PARSE_ERROR",
-                "impact_type": "PARSE_ERROR",
-                "domain": "PARSE_ERROR",
-                "product_type": "PARSE_ERROR",
-                "outage_scope": "PARSE_ERROR",
+                'problems': [{"summarised_problem": "PARSE_ERROR", "fidelity": "unknown", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "unknown"}],
                 "_raw_response": result_text,
                 "_input_tokens": input_tokens,
                 "_output_tokens": output_tokens,
@@ -168,13 +166,7 @@ def disaggregate_one(
             }
     except Exception as e:
         return {
-            "summarised_user_problem": "API_ERROR",
-            "surface_symptom": "API_ERROR",
-            "user_goal": "API_ERROR",
-            "impact_type": "API_ERROR",
-            "domain": "API_ERROR",
-            "product_type": "API_ERROR",
-            "outage_scope": "API_ERROR",
+            'problems': [{"summarised_problem": "API_ERROR", "fidelity": "unknown", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "unknown"}],
             "_row_idx": row_idx,
             "_error": f"API error: {str(e)}"
         }
@@ -220,13 +212,7 @@ def process_batch_concurrent(
             except Exception as e:
                 logger.error(f"Task {start_idx + idx} failed: {e}")
                 results[idx] = {
-                    "summarised_user_problem": "API_ERROR",
-                    "surface_symptom": "API_ERROR",
-                    "user_goal": "API_ERROR",
-                    "impact_type": "API_ERROR",
-                    "domain": "API_ERROR",
-                    "product_type": "API_ERROR",
-                    "outage_scope": "API_ERROR",
+                    'problems': [{"summarised_problem": "API_ERROR", "fidelity": "unknown", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "unknown"}],
                     "_row_idx": start_idx + idx,
                     "_error": f"Thread error: {str(e)}"
                 }
@@ -379,18 +365,9 @@ def main():
                 logger
             )
 
-            # Merge results with original rows
+            # Merge results with original rows — explode multi-problem rows
             for idx, (_, row) in enumerate(batch_df.iterrows()):
                 result = batch_results[idx]
-                merged = row.to_dict()
-                merged['summarised_user_problem'] = result.get('summarised_user_problem', 'ERROR')
-                merged['surface_symptom'] = result.get('surface_symptom', 'ERROR')
-                merged['user_goal'] = result.get('user_goal', 'ERROR')
-                merged['impact_type'] = result.get('impact_type', 'ERROR')
-                merged['domain'] = result.get('domain', 'ERROR')
-                merged['product_type'] = result.get('product_type', 'ERROR')
-                merged['outage_scope'] = result.get('outage_scope', 'ERROR')
-                results.append(merged)
 
                 total_input_tokens += result.get('_input_tokens', 0)
                 total_output_tokens += result.get('_output_tokens', 0)
@@ -398,6 +375,17 @@ def main():
                 if result.get('_error'):
                     errors += 1
                     logger.warning(f"Row {result.get('_row_idx')}: {result.get('_error')}")
+
+                for problem in result.get('problems', []):
+                    merged = row.to_dict()
+                    merged['summarised_problem'] = problem.get('summarised_problem', 'ERROR')
+                    merged['fidelity'] = problem.get('fidelity', 'unknown')
+                    merged['journey'] = problem.get('journey', 'unknown')
+                    merged['team'] = problem.get('team', 'unknown')
+                    merged['problem_type'] = problem.get('problem_type', 'unknown')
+                    merged['impact'] = problem.get('impact', 'unknown')
+                    merged['cause_fidelity'] = problem.get('cause_fidelity', 'N/A')
+                    results.append(merged)
 
             # Save checkpoint after each batch
             save_checkpoint(checkpoint_path, batch_end, results, {

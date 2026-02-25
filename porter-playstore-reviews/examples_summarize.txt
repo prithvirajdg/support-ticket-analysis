@@ -1,0 +1,71 @@
+## Examples
+
+### Example 1 (partner, English, single problem)
+Review: "I have been working as a full-time Porter rider since the lockdown, and I rely on these orders to meet my daily targets. I have noticed that the number of orders on Porter has significantly decreased. Upon speaking with customers, it appears that orders are either not being placed promptly or are suddenly getting canceled after being placed. This issue has occurred multiple times. Could you please let us know when this problem will be resolved? It seems there isn't a permanent solution in place"
+Output: [{"sentiment": "negative", "emotion": "concerned", "summary": "partner feels earnings have been impacted as the number of orders has significantly reduced, and claims that customers say orders don't get placed promptly or get cancelled after being placed"}]
+
+---
+
+### Example 2 (partner, Hinglish, single problem)
+Review: porter company mein jab two wheeler scooter lagane ke bavjud porter company jyada scooter partner ko two wheeler bike ka order jyada dete Hain aur uska khamiyan scooter Bhagat na padta hai uske vajah se earning mein payment kam aata Hai bike ka average 60/70 per kilometre hota Hai aur scooty ka 35/40 milta Hai aur uski vajah se portal partner ko arning kam aati Hai company customer ko option Diya hua Hai aap two wheeler mein scooter ya bike choice Karen to fir portar partner ko y hoice nahin
+Output: [{"sentiment": "negative", "emotion": "frustrated", "summary": "partner feels that his earnings are getting affected because bike and scooty are clubbed together under 2-wheeler with the same fare, but scooty mileage is 35-40 km/litre vs bike at 60-70 km/litre, so scooty partners spend more on fuel for the same pay"}]
+
+---
+
+### Example 3 (partner, Hinglish, insufficient information)
+Review: porter driver ki koi sahayta nahi karta helpline me bat karna to bhool jao
+Output: [{"sentiment": "neutral", "emotion": "neutral", "summary": "insufficient information"}]
+
+---
+
+### Example 4 (partner, Hinglish, single problem)
+Review: Bhai porter ye kehta hai ki payment lene ki zimmedari driver ki hai or fir chahe waiting time lagne ke bad payment badhe ya nhi badhe usmain bhi porter ki koi zimmedari nhi hai usmain bhi driver ki galti hai fir trip end krne ke bad bhi ager porter ka amount badhta hai or customer sirf booking ke time jo amount show ho rha hai wahi dena chata hai waiting time ka pessa bhi porter ki zimmedari nhi hai lakin in sab mein 1 commen chiz hai jo ki porter ki fis ya porter ka kamisan ye porter wale sabse
+Output: [{"sentiment": "negative", "emotion": "displeased", "summary": "partner is expressing displeasure that Porter doesn't help in cases where the fare increases due to waiting time but customer refuses to pay the updated fare, and puts the responsibility of recovering fare on partner"}]
+
+---
+
+### Example 5 (partner, English, multi-problem — 2 rows)
+Review: "They force you take order even if its 15 to 20 km away, then we have to return 15 km without an order losing the money of 15 km again."
+Output: [{"sentiment": "negative", "emotion": "frustrated", "summary": "partner is complaining that he gets pickup locations 15 to 20 km away and is forced to fulfil them"}, {"sentiment": "negative", "emotion": "frustrated", "summary": "partner complains that he doesn't get any order on the way back and has to travel idle for 15 kms, losing money"}]
+
+---
+
+### Example 6 (partner, Hindi Devanagari, single problem)
+Review: सबसे घटिया partner app हैं किसी को जल्दी ऑडर देता हैं किसी को ४ घंटा लटका देता हैं ये सब ऐप से १०००० भी निकलना मुश्किल है कभी कभी लोग टाइम ऑडर नहीं देता हैं सिर्फ पिक टाइम में लालच दे कोई भी एरिया में फसा देता है और भी खाली बहते रहो
+Output: [{"sentiment": "negative", "emotion": "angry", "summary": "partner complains that the app is unpredictable because some partners get orders immediately while some wait for 4 hours, making it hard to earn even 10,000. also says the app lures partners during peak time but dumps them in areas with no orders"}]
+
+---
+
+### Example 7 (partner, Hinglish, single problem)
+Review: full bekar app hi customer call number hi nahin hai aap mein ekadam bekar hath hai fraud application ab Tak nahin application 100 bar aane ka Sukha hun ab Tak nahin customer support Mila nahin aapki head office mein kuchh support Mila Maine jo aapki ID mein Paisa dala tha aap wapas kar do
+Output: [{"sentiment": "negative", "emotion": "angry", "summary": "partner is upset because there is no customer support number, has tried reaching out 100 times including at the head office but couldn't get support, and is so frustrated that he wants his deposited money back"}]
+
+---
+
+### Example 8 (customer, Hinglish, multi-problem — 2 rows)
+Review: "worst service & care less customer care. apne fayde ke chakkar me customer ka nukshan kra rahe h. Itni bdi compony hone ke baad bhi kaam ka nhi pta ki kaam krte kaise hai aur customer support team ko hire kis basis pr krte h na baat krne ka pta, na query solve krne ka pta, only they know ki query solve krte h fir baat ko kyu na hafte bit jaye. Ek invoice bill generate nhi aata krna team ko. such a shameless & care less compony. I recommend people to stop using this Worst Application."
+Output: [{"sentiment": "negative", "emotion": "angry", "summary": "customer is upset because customer support is not able to resolve queries and doesn't even follow up on open queries, and recommends people to stop using the app"}, {"sentiment": "negative", "emotion": "frustrated", "summary": "customer expresses frustration at inability of customer support to generate an invoice"}]
+
+---
+
+### Example 9 (customer, English, single problem)
+Review: Not book portor with loading and unloading option. A whole day pass but portor not assigned any delivery partner for my delivery
+Output: [{"sentiment": "negative", "emotion": "upset", "summary": "customer is upset that they weren't assigned a delivery partner even though an entire day had passed for the order they booked with the loading"}]
+
+---
+
+### Example 10 (customer, English, multi-problem — 2 rows)
+Review: "I used Porter's service for house shifting. the local shifting partners/organization assigned for the move collected extra carton charges and promised to refund the amount later. It has now been over a month, and they are not answering my calls. When I approached Porter for support, they have shown no real accountability. I have lodged complaints 3times. Porter is also not sharing any proper information about the shifting partner, which prevents me from taking direct action. frustrating!!!"
+Output: [{"sentiment": "negative", "emotion": "frustrated", "summary": "customer was charged extra for cartons by the house shifting partners and was promised a refund but hasn't received it even after a month"}, {"sentiment": "negative", "emotion": "helpless", "summary": "customer feels helpless because Porter support hasn't resolved the issue despite 3 complaints, and Porter won't share the shifting partner's details so the customer can't take action independently"}]
+
+---
+
+### Example 11 (customer, English, multi-problem — 2 rows)
+Review: very dangerous and unsafe experience. Porter has no customer service. They send just about any criminal type person to your house without any verification or information provided about that person. there is no way to get in touch with them. I will never use them again.
+Output: [{"sentiment": "negative", "emotion": "alarmed", "summary": "customer felt unsafe because Porter sent an unverified person to their house with no information provided about them, and says they will never use the app again"}, {"sentiment": "negative", "emotion": "angry", "summary": "customer is angry that there was no way to reach support when they felt a safety concern"}]
+
+---
+
+### Example 12 (customer, English, single problem)
+Review: "I am extremely disappointed with the service provided today. I booked a delivery for a location only 20km away at 5:00 PM. It is now 7:25 PM, and the item has still not been delivered. To make matters worse, the driver is refusing to pick up my calls, leaving me with no update on where my package is. This is a massive lapse in professional service and basic accountability. If you value your time and the safety of your items, I would suggest looking elsewhere. Very bad service"
+Output: [{"sentiment": "negative", "emotion": "disappointed", "summary": "customer is extremely disappointed that a delivery for only 20km booked at 5PM still hasn't arrived by 7:25PM, the partner is refusing to pick up calls so there's no update on the package, and feels this is a massive lapse in accountability. suggests others to look elsewhere"}]

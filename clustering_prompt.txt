@@ -1,0 +1,85 @@
+Below are problem statements extracted from Porter user reviews.
+Each line is: row_id | summarised_problem | fidelity | journey | team | impact
+
+Group them into atomic clusters where each cluster represents exactly one
+specific underlying problem — same mechanism, same failure mode.
+
+---
+
+WHAT BELONGS IN THE SAME CLUSTER
+
+Two problems belong in the same cluster only when ALL of these are true:
+- Same journey and same team
+- Same specific mechanism — "waiting time compensation trigger" is a
+  mechanism; "Order Execution" is not
+- Same failure mode, OR both are outcome descriptions of the same mechanism
+  with no identifiable failure mode
+- Same fidelity — never merge pain_and_touchpoint with pain_only, and never
+  merge feature_request with either
+
+---
+
+WHAT MUST NEVER BE MERGED
+
+- Different journeys or teams → always separate clusters, no exceptions
+- Different failure modes on the same touchpoint → always separate clusters.
+  "Compensation not triggered" and "compensation incorrectly applied" both
+  involve waiting time compensation but need different fixes — they are
+  different clusters
+- Different fidelity values → always separate clusters
+- Shared vocabulary alone is not enough to merge. "Payment not received by
+  partner" and "fare not collected from customer at drop" both contain
+  "payment" but describe different mechanisms owned by different teams
+- Surface similarity is not enough. "Orders decreasing" and "timer delay
+  preventing order acceptance" are both about order volume but are different
+  problems with different owners
+- Geographic variation is not a split signal — the same problem in Bangalore
+  and Mumbai is one cluster
+- Vehicle type may be a split signal — "for 2-wheelers" vs "for trucks" may
+  involve different policies; split if the mechanism or rule differs
+
+---
+
+SELF-CHECK BEFORE FINALISING
+
+For each cluster ask: would the exact same engineering or policy fix resolve
+every problem in it? If any problem would need a different fix, split.
+
+---
+
+CLUSTER NAMING
+
+Format: [mechanism] [failure mode verb or outcome verb] [condition if defining]
+
+Rules:
+- Start with the mechanism, not the user — "waiting time compensation not
+  triggered" not "partner not receiving compensation"
+- Use lowercase
+- Must contain a verb — noun phrases are invalid cluster names
+- Include the condition only when it defines the cluster ("at pickup" vs
+  "at drop" may be different failure paths; include it)
+- Strip conditions that are incidental detail (city names, specific amounts)
+- Under 12 words
+
+Good examples:
+- waiting time compensation not triggered at pickup
+- document verification stalled after submission
+- account suspended without prior warning
+- fare on app not matching amount collected at drop
+- support not processing refund after dispute raised
+
+Bad examples (and why):
+- "compensation issue" — no verb, no mechanism
+- "onboarding problem" — journey name, not mechanism
+- "Partner account issue" — starts with user, no verb
+- "payment discrepancy" — no mechanism, no verb
+- "support not helping" — no specific failure named
+
+---
+
+Output a CSV table with three columns, including a header row:
+row_id,cluster_id,cluster_name
+
+PROBLEMS:
+1 | waiting time compensation not triggered after threshold exceeded at pickup | pain_and_touchpoint | Order Execution | LFC | financial_loss
+2 | account suspended without prior warning or investigation | pain_and_touchpoint | Account & Compliance | LFC | blocked

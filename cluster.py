@@ -42,6 +42,8 @@ def main():
                         help='HDBSCAN minimum cluster size (default: 15)')
     parser.add_argument('--show-samples', type=int, default=5,
                         help='Number of samples to show per cluster (default: 5)')
+    parser.add_argument('--prob-threshold', type=float, default=0.0,
+                        help='Minimum HDBSCAN membership probability to keep a cluster assignment (0.0-1.0, default: 0.0 = keep all)')
     args = parser.parse_args()
 
     import pandas as pd
@@ -133,6 +135,13 @@ def main():
         logger.info(f"HDBSCAN complete: {hdbscan_time:.1f}s")
         tracker.checkpoint("HDBSCAN complete")
 
+        # Apply probability threshold — push low-confidence assignments to noise
+        if args.prob_threshold > 0.0:
+            low_confidence = clusterer.probabilities_ < args.prob_threshold
+            n_demoted = low_confidence.sum()
+            cluster_labels[low_confidence] = -1
+            logger.info(f"Probability threshold {args.prob_threshold}: demoted {n_demoted} low-confidence points to noise")
+
         # Calculate stats
         n_clusters = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
         n_noise = (cluster_labels == -1).sum()
@@ -177,27 +186,35 @@ def main():
             cluster_df = df[df['cluster'] == cluster_id]
             size = len(cluster_df)
 
-            # Get domain breakdown
-            if 'domain' in cluster_df.columns:
-                domains = cluster_df['domain'].value_counts().head(2)
-                domain_str = ", ".join([f"{d}: {c}" for d, c in domains.items()])
+            # Get journey breakdown
+            if 'journey' in cluster_df.columns:
+                journeys = cluster_df['journey'].value_counts().head(2)
+                journey_str = ", ".join([f"{j}: {c}" for j, c in journeys.items()])
             else:
-                domain_str = "N/A"
+                journey_str = "N/A"
 
-            # Get impact breakdown
-            if 'impact_type' in cluster_df.columns:
-                impacts = cluster_df['impact_type'].value_counts().head(2)
-                impact_str = ", ".join([f"{i}: {c}" for i, c in impacts.items()])
+            # Get team breakdown
+            if 'team' in cluster_df.columns:
+                teams = cluster_df['team'].value_counts().head(2)
+                team_str = ", ".join([f"{t}: {c}" for t, c in teams.items()])
             else:
-                impact_str = "N/A"
+                team_str = "N/A"
+
+            # Get fidelity breakdown
+            if 'fidelity' in cluster_df.columns:
+                fidelities = cluster_df['fidelity'].value_counts()
+                fidelity_str = ", ".join([f"{f}: {c}" for f, c in fidelities.items()])
+            else:
+                fidelity_str = "N/A"
 
             logger.info(f"\n--- Cluster {cluster_id} ({size} items) ---")
-            logger.info(f"    Domains: {domain_str}")
-            logger.info(f"    Impact: {impact_str}")
+            logger.info(f"    Journey:  {journey_str}")
+            logger.info(f"    Team:     {team_str}")
+            logger.info(f"    Fidelity: {fidelity_str}")
             logger.info(f"    Sample problems:")
 
-            if 'summarised_user_problem' in cluster_df.columns:
-                samples = cluster_df['summarised_user_problem'].head(args.show_samples).tolist()
+            if 'summarised_problem' in cluster_df.columns:
+                samples = cluster_df['summarised_problem'].head(args.show_samples).tolist()
                 for sample in samples:
                     display = str(sample)[:75] + "..." if len(str(sample)) > 75 else sample
                     logger.info(f"      - {display}")
@@ -209,8 +226,8 @@ def main():
         if n_noise > 0:
             logger.info(f"\n--- Noise/Outliers ({n_noise} items) ---")
             noise_df = df[df['cluster'] == -1]
-            if 'summarised_user_problem' in noise_df.columns:
-                samples = noise_df['summarised_user_problem'].head(args.show_samples).tolist()
+            if 'summarised_problem' in noise_df.columns:
+                samples = noise_df['summarised_problem'].head(args.show_samples).tolist()
                 for sample in samples:
                     display = str(sample)[:75] + "..." if len(str(sample)) > 75 else sample
                     logger.info(f"      - {display}")

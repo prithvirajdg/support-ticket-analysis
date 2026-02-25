@@ -1,80 +1,164 @@
 ## Examples
 
 ### Example 1
-TRANSCRIPT:
-Respected customer support team, we are currently dealing with a significant problem concerning our medical data server. The data appears to have vanished, and we suspect it could be due to human error or a software malfunction. We have tried to restart the server and examine our backups, but so far, we have not been able to retrieve the missing data. We would be highly grateful for your prompt help in addressing this issue. Kindly inform us of the steps we can take to resolve this matter as quickly as possible.
+SUMMARY:
+partner relies on Porter orders to meet daily targets but has noticed the number of orders has significantly decreased. partner claims that customers say orders don't get placed promptly or get cancelled after being placed, and this has occurred multiple times. partner is concerned about when this problem will be resolved.
 
 OUTPUT:
-{"summarised_user_problem": "data is missing and can't be retrieved", "surface_symptom": "data appears to have vanished, and no efforts to retrieve are successful", "user_goal": "wants the data to be restored so he can see full data", "impact_type": "blocked", "domain": "data storage", "product_type": "database retrieval", "outage_scope": "all users"}
+{"summarised_problem": "order frequency has significantly dropped", "fidelity": "pain_only", "journey": "Order Allocation", "team": "unknown", "problem_type": "unknown", "impact": "financial_loss", "cause_fidelity": "N/A"}
 
 ---
 
 ### Example 2
-TRANSCRIPT:
-Digital campaigns are not functioning properly. It is suspected that this is due to incompatible software updates. Attempts to resolve the issue through restarts and configuration checks have been made.
+SUMMARY:
+partner feels that his earnings are getting affected because bike and scooty are clubbed together under 2-wheeler with the same fare, but scooty mileage is 35-40 km/litre vs bike at 60-70 km/litre, so scooty partners spend more on fuel for the same pay
 
 OUTPUT:
-{"summarised_user_problem": "insufficient information", "surface_symptom": "digital campaigns aren't functioning properly", "user_goal": "insufficient information", "impact_type": "insufficient information", "domain": "software", "product_type": "marketing", "outage_scope": "insufficient information"}
+{"summarised_problem": "scooty and bike assigned same fare despite higher fuel costs for scooty", "fidelity": "pain_and_touchpoint", "journey": "Order Allocation", "team": "Marketplace", "problem_type": "policy", "impact": "financial_loss", "cause_fidelity": "cause_known"}
 
 ---
 
 ### Example 3
-TRANSCRIPT:
-Hello customer support, I am encountering slow loading times on your website. This problem appeared recently and might be caused by high traffic. I attempted to reset the server and clear the cache but the issue still exists. I kindly request you to investigate this and offer a solution at your earliest convenience. Please inform me if you need further details from me to address this matter.
+SUMMARY:
+partner feels that despite working hard and generating money for the company, their problems are not being resolved, and criticizes the call center customer care service as poor
 
 OUTPUT:
-{"summarised_user_problem": "website is slow to load", "surface_symptom": "website is slow to load and nothing is improving the speed", "user_goal": "wants website to load at speed he is used to", "impact_type": "degraded", "domain": "connectivity", "product_type": "website", "outage_scope": "insufficient information"}
+{"summarised_problem": "partner issues not being resolved", "fidelity": "pain_only", "journey": "Customer Support", "team": "TNS", "problem_type": "touchpoint_ops", "impact": "inconvenienced", "cause_fidelity": "N/A"}
 
 ---
 
 ### Example 4
-TRANSCRIPT:
-The investment portfolio analysis tool encountered an issue during the routine update, which might be related to incompatible data formats.
+SUMMARY:
+partner complains that the app system speed is slow and makes work horrible
 
 OUTPUT:
-{"summarised_user_problem": "insufficient information", "surface_symptom": "there is some issue with the investment portfolio analysis tool", "user_goal": "insufficient information", "impact_type": "insufficient information", "domain": "software", "product_type": "portfolio analysis", "outage_scope": "insufficient information"}
+{"summarised_problem": "app speed is slow affecting partner's work", "fidelity": "pain_only", "journey": "unknown", "team": "unknown", "problem_type": "touchpoint_app", "impact": "inconvenienced", "cause_fidelity": "N/A"}
 
 ---
 
 ### Example 5
-TRANSCRIPT:
-Dear support team, we encountered a crash on our SaaS platform during workflow optimization. It's possible that there are Azure integration problems. We've tried restarting the servers and reviewing the system logs, but the issue remains unresolved. We kindly request your assistance in investigating this problem and offering a solution. Our team can supply any additional information necessary to address this issue.
+SUMMARY:
+partner reports that the driver app is not working correctly and has multiple technical issues including location tracking problems, update failures, calling/confirm option malfunctions, pickup distance calculation errors, and timing/seconds display issues
 
 OUTPUT:
-{"summarised_user_problem": "saas platform is facing issues after attempting workflow optimisation", "surface_symptom": "there was a crash of the saas platform post which they're unable to use it", "user_goal": "restore it to normal working", "impact_type": "insufficient information", "domain": "software", "product_type": "saas platform", "outage_scope": "insufficient information"}
+{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 ---
 
 ### Example 6
-TRANSCRIPT:
-I am contacting you to seek information on digital strategy options for brand growth that involve OLED-Monitor integration. I am curious to learn how this technology can improve customer engagement and boost brand awareness. Could you share details on strategies that have been effective in the past? I would be grateful for any suggestions or insights you can provide. Furthermore, I would like to understand the possible obstacles and constraints associated with adopting such a strategy. Thank you for your support and cooperation.
+SUMMARY:
+partner is expressing displeasure that Porter doesn't help in cases where the fare increases due to waiting time but customer refuses to pay the updated fare, and puts the responsibility of recovering fare on partner
 
 OUTPUT:
-{"summarised_user_problem": "wants to know how our offering can boost their customer experience", "surface_symptom": "wants to find details on strategies that have led to improved customer engagement and brand awareness", "user_goal": "get the required information", "impact_type": "information", "domain": "hardware", "product_type": "monitor", "outage_scope": "not applicable"}
+{"summarised_problem": "waiting time charges not collectible when customer disputes updated fare", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "team": "LFC", "problem_type": "service/policy", "impact": "financial_loss", "cause_fidelity": "cause_known"}
 
 ---
 
 ### Example 7
-TRANSCRIPT:
-A data leak has compromised medical records on Debian 10 Buster systems, potentially linked to a vulnerability in the Adobe Effects 2021 plugin.
+SUMMARY:
+partner reports neither good nor bad experience
 
 OUTPUT:
-{"summarised_user_problem": "wants to inform that a data leak has happened", "surface_symptom": "data leak has compromised medial records", "user_goal": "insufficient information", "impact_type": "blocked", "domain": "data storage", "product_type": "database access", "outage_scope": "all users"}
+{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 ---
 
 ### Example 8
-TRANSCRIPT:
-Is there any information on the integration options available?
+SUMMARY:
+partner feels that drivers are being cheated due to 20% commission and frequent suspensions, and warns that a protest will happen soon
 
 OUTPUT:
-{"summarised_user_problem": "insufficient information", "surface_symptom": "insufficient information", "user_goal": "insufficient information", "impact_type": "insufficient information", "domain": "insufficient information", "product_type": "insufficient information", "outage_scope": "insufficient information"}
+{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
 
 ---
 
 ### Example 9
-TRANSCRIPT:
-Encountered: Unexpected denial of access to medical records. Potential indicators include server configuration errors or recent security updates. Efforts made: Restarted servers, reviewed logs, and confirmed user permissions. Urgently require help to address this issue. Kindly offer a solution or direct me to the appropriate troubleshooting measures.
+SUMMARY:
+partner complains that earnings have reduced and feels that Porter support is biased — they always blame the partner for issues but never hold customers accountable, and have suspended his ID for a day for an alleged mistake
 
 OUTPUT:
-{"summarised_user_problem": "has been denied access to records", "surface_symptom": "is denied access to records", "user_goal": "wants to access the records and wants issue preventing access fixed", "impact_type": "blocked", "domain": "data storage", "product_type": "database access", "outage_scope": "insufficient information"}
+{"summarised_problem": "account suspended without investigation of the alleged incident", "fidelity": "pain_and_touchpoint", "journey": "Account & Compliance", "team": "LFC", "problem_type": "touchpoint_ops/policy", "impact": "blocked", "cause_fidelity": "cause_unknown"}
+
+---
+
+### Example 10 (split — two distinct problems, two teams)
+SUMMARY:
+partner is upset that the app showed a fare of 213 rupees but the customer is only paying 190 rupees, and customer care advisor Shivam Kumar refused to help resolve the discrepancy
+
+OUTPUT:
+[
+  {"summarised_problem": "customer not paying full fare shown on app", "fidelity": "pain_and_touchpoint", "journey": "Payments", "team": "Marketplace", "problem_type": "service/policy", "impact": "financial_loss", "cause_fidelity": "cause_known"},
+  {"summarised_problem": "support failing to mediate fare dispute between partner and customer", "fidelity": "pain_and_touchpoint", "journey": "Customer Support", "team": "TNS", "problem_type": "touchpoint_ops", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+]
+
+---
+
+### Example 11
+SUMMARY:
+partner is expressing strong dissatisfaction with Porter, calling it a useless app where people's money is being taken advantage of, warns others not to use it, and says customer care service in Kota is poor
+
+OUTPUT:
+{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+
+---
+
+### Example 12
+SUMMARY:
+partner finds the app system confusing and complains that work gets disrupted daily due to last-minute order cancellations
+
+OUTPUT:
+{"summarised_problem": "last-minute order cancellations disrupting partner's work", "fidelity": "pain_and_touchpoint", "journey": "Cancellations", "team": "LFC", "problem_type": "service/policy", "impact": "inconvenienced", "cause_fidelity": "cause_unknown"}
+
+---
+
+### Example 13
+SUMMARY:
+partner submitted all required onboarding documents three weeks ago but the verification is still not complete, the process is extremely slow and there has been no movement
+
+OUTPUT:
+{"summarised_problem": "document verification not progressing weeks after submission", "fidelity": "pain_and_touchpoint", "journey": "Onboarding", "team": "LFC", "problem_type": "touchpoint_ops", "impact": "blocked", "cause_fidelity": "cause_unknown"}
+
+---
+
+### Example 14
+SUMMARY:
+partner submitted onboarding documents but received no confirmation that they were received, and has no way of knowing whether verification has started or what the current status is
+
+OUTPUT:
+{"summarised_problem": "no acknowledgement or status update received after document submission", "fidelity": "pain_and_touchpoint", "journey": "Onboarding", "team": "LFC", "problem_type": "touchpoint_ops", "impact": "inconvenienced", "cause_fidelity": "cause_unknown"}
+
+---
+
+### Example 15
+SUMMARY:
+partner waited over an hour at the pickup location for the customer but received no waiting time compensation despite clearly exceeding the threshold
+
+OUTPUT:
+{"summarised_problem": "waiting time compensation not triggered after threshold exceeded at pickup", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_unknown"}
+
+---
+
+### Example 16
+SUMMARY:
+partner received a waiting time penalty deduction even though the customer was already present at the pickup location and there was no waiting involved
+
+OUTPUT:
+{"summarised_problem": "waiting time penalty applied despite customer being present at pickup", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+
+---
+
+### Example 17
+SUMMARY:
+partner requests that Porter expand its services to their city, saying there is strong demand for logistics in the area and many drivers would benefit
+
+OUTPUT:
+{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
+
+---
+
+### Example 18
+SUMMARY:
+partner suggests that the app should allow booking multiple orders at the same time so that partners can increase their earnings during peak hours
+
+OUTPUT:
+{"summarised_problem": "multiple simultaneous order booking not supported in app", "fidelity": "feature_request", "journey": "Order Acceptance", "team": "Marketplace", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
