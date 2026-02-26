@@ -3,7 +3,7 @@
 ## Goal
 Surface specific, actionable user problems from Porter Google Play Store reviews (partner and customer apps) by:
 1. Summarising multilingual reviews into English narratives
-2. Extracting a structured core problem statement (7 fields) from each narrative
+2. Extracting a structured core problem statement (10 fields) from each narrative
 3. Clustering similar problems by meaning (not words)
 4. Manually reviewing clusters and assigning names
 
@@ -580,3 +580,147 @@ Go to **GCP Console → Vertex AI → Workbench** and click **STOP**. A running 
 - Step-by-step Gemini-specific walkthrough (Gem setup, batch disaggregation, data preparation, clustering, review and fix-up)
 - Full clustering prompt inline — no need to cross-reference other files
 - Example file column spec for uploading real Porter examples as supplementary Gem context: `body`, `summarised_problem`, `fidelity`, `journey`, `team`, `problem_type`, `impact`, `cause_fidelity`, `notes` (optional, for non-obvious cases only)
+
+---
+
+### Schema: stage field added (Feb 2026)
+
+**Why:** `stage` is the specific step within a journey where the problem occurs (e.g. "coordinate loading" within Order Execution, "document approval" within Onboarding). More granular than journey — two problems in the same journey but different stages need different owners/fixes.
+
+**What changed:**
+- `system_prompt.txt`: Stage section added with a table of valid stage values per journey (sourced directly from blueprint CSV); N/A for pain_only/feature_request; unknown for customer-side and cross-cutting journeys
+- `examples.txt`: `stage` field added to all 18 examples
+- `disaggregate.py`: `stage` added to 3 error fallback dicts and merge loop
+- `embed.py`: `stage` added to `build_embedding_text` field list
+- `gemini_guide.md`: batch prompt column list updated; Results tab column layout updated; Cluster Input layout updated; clustering formula updated
+- `clustering_prompt.txt`: input format header and cluster condition updated; example PROBLEMS lines include stage
+
+---
+
+### Schema: mechanism field added (Feb 2026)
+
+**Why:** `mechanism` is a short noun phrase naming the specific component that broke — stripped of the failure verb. "waiting time compensation", "allocation delay", "trip start button". Enables cluster review by component name rather than reading full problem statements. Two problems with the same mechanism but different failure modes share this value.
+
+**What changed:**
+- `system_prompt.txt`: Mechanism section added with definition, rules, and a table of good examples
+- `examples.txt`: `mechanism` field added to all 18 examples
+- `disaggregate.py`: `mechanism` added to 3 error fallback dicts and merge loop
+- `embed.py`: `mechanism` added to `build_embedding_text` field list
+- `gemini_guide.md`, `clustering_prompt.txt`: updated throughout
+
+---
+
+### Schema: failure_mode field added (Feb 2026)
+
+**Why:** `failure_mode` is the verb that pairs with `mechanism` — how the mechanism broke (not triggered, incorrectly triggered, delayed, wrong output, blocked, no feedback, does not exist, etc.). Uses the existing taxonomy that was already in the system prompt guidelines. Together `mechanism` + `failure_mode` uniquely define a cluster: same mechanism + different failure mode = different fix = different cluster. Previously this was embedded in the free text of `summarised_problem` and required reading to detect; now it is a filterable column.
+
+**Key property demonstrated by examples 15 and 16:**
+- Ex 15: mechanism = `waiting time compensation`, failure_mode = `not triggered`
+- Ex 16: mechanism = `waiting time compensation`, failure_mode = `incorrectly triggered`
+- Same mechanism, different failure mode → different cluster, different engineering fix
+
+**What changed:**
+- `system_prompt.txt`: Failure Mode field section added between Mechanism and Team Ownership; Output Format updated across all 6 format examples
+- `examples.txt`: `failure_mode` added to all 18 examples
+- `disaggregate.py`: `failure_mode` added to 3 error fallback dicts and merge loop
+- `embed.py`: `failure_mode` added to `build_embedding_text` field list
+- `gemini_guide.md`, `clustering_prompt.txt`: updated throughout
+
+---
+
+### Web UI: gemini_guide.md and clustering_prompt.txt made fully executable (Feb 2026)
+
+**Why:** Previous guide described steps but required manual JSON parsing from Gemini's output. Rewritten to request CSV output during disaggregation (paste directly into spreadsheet) and provide `clustering_prompt.txt` as a standalone file (open, replace PROBLEMS section, paste).
+
+**What changed:**
+- `gemini_guide.md`: Full rewrite — batch prompt requests CSV rows not JSON; explicit column layout tables at every step; VLOOKUP for body; row_id step before clustering; VLOOKUP for cluster join
+- `clustering_prompt.txt` (new file): Standalone clustering prompt ready to copy-paste; PROBLEMS section at the end as a placeholder
+
+---
+
+## Pending Decisions & Next Steps
+
+### Decided — not yet implemented
+
+#### 1. Pre-stratified clustering in cluster.py
+
+**Decision reached:** Stratify by `fidelity` first (hard pre-filter — never mix categories), then within `pain_and_touchpoint` stratify by `team × failure_mode`.
+
+**Rationale:**
+- `fidelity`: hard categorical boundary — pain_only, pain_and_touchpoint, feature_request need different treatment
+- `team`: hard ownership boundary — different team = different fixer
+- `failure_mode`: clean enum that directly encodes "same type of fix needed" — different failure mode = always different cluster even on the same mechanism
+- `mechanism` was considered but rejected as a stratification key: it is free-text, so exact-string matching creates spurious splits ("waiting time compensation" vs "waiting time charges" → two strata, should be one)
+- `stage` was considered but rejected: ~40–50% of rows have `stage: N/A` or `unknown`, too many unknowns for reliable stratification
+- `journey` is partially redundant with `team` (most journeys are owned by one team)
+
+**Scale-dependent key:**
+| Dataset size | Stratification key |
+|---|---|
+| ≤500 rows | `fidelity` pre-filter, then cluster by `team` |
+| 500–5K rows | `fidelity` pre-filter, then cluster by `team × failure_mode` |
+| 5K+ rows | `fidelity` pre-filter, then cluster by `team × failure_mode`, optionally add `journey` |
+
+**Files to change:** `cluster.py` — add `--stratify` flag (default on); loop over strata, run UMAP+HDBSCAN per stratum, concatenate results
+
+---
+
+#### 2. HDBSCAN + UMAP parameter tuning in cluster.py
+
+**Decision reached:** Apply the following changes to `cluster.py` defaults:
+- `cluster_selection_method='leaf'` (currently `'eom'`) — prevents sub-clusters from being merged upward; produces finer-grained clusters
+- `min_cluster_size=8` (currently 15) — lower threshold for more specific clusters
+- `n_neighbors=10` in UMAP — controls how local vs global the manifold is; lower = more local structure preserved
+
+**Files to change:** `cluster.py` — update default argument values and UMAP/HDBSCAN instantiation
+
+---
+
+#### 3. Embedding model upgrade in embed.py
+
+**Decision reached:** Switch from `all-MiniLM-L6-v2` (384 dimensions) to `all-mpnet-base-v2` (768 dimensions). One-line change. Better semantic discrimination, particularly important now that 10 fields are embedded and subtle differences in mechanism/failure_mode wording need to be captured.
+
+**Files to change:** `embed.py` — one line in model instantiation; update log message (384 → 768 dimensions)
+
+---
+
+### Discussed — decision pending
+
+#### 4. Deterministic cluster quality check (post-clustering)
+
+**Context:** The original `split_clusters.py` (LLM-assisted splitting) is now largely superseded because `mechanism` and `failure_mode` are structured fields. A simpler deterministic check is possible: after HDBSCAN, flag any cluster where rows disagree on `mechanism` or `failure_mode`. These clusters are candidates for manual splitting.
+
+**Options:**
+- A: Add a post-clustering script that outputs a report of impure clusters (different mechanism or failure_mode within same cluster_id) — lightweight, no LLM
+- B: Add automatic splitting: group by `(cluster_id × mechanism × failure_mode)` and assign new sub-cluster IDs automatically — no LLM, fully automated
+- C: Keep the original LLM-split approach for edge cases where both mechanism and failure_mode are `unknown` — LLM is the only tool that can reason about these
+
+**Not yet decided:** Which option, or combination, to implement.
+
+---
+
+#### 5. Schema validation in disaggregate.py
+
+**Context:** A `validate_problem` function that checks each Gemini output against the allowed values for each field before it enters the pipeline — catches hallucinated journey names, invalid fidelity values, out-of-taxonomy failure_mode values, etc. Full code was designed in an earlier session.
+
+**Not yet decided:** Whether to hard-reject invalid rows or soft-flag them (log a warning, continue with the value as-is).
+
+---
+
+#### 6. Reasoning field in disaggregation (chain-of-thought)
+
+**Context:** Adding a `reasoning` field to the LLM output forces it to explain its classification step before committing to field values. Improves consistency on ambiguous cases, particularly for the new fields (stage, mechanism, failure_mode) which require nuanced judgment. The reasoning field would be stripped before embedding — it's only for output quality.
+
+**Tradeoff:** ~20–30% more output tokens per row (cost and speed); qualitative improvement on edge cases.
+
+**Not yet decided:** Whether to add it and whether to keep it in final output or strip it post-validation.
+
+---
+
+### Not started
+
+#### Customer-side examples in examples.txt
+Currently zero examples covering customer-side journeys (Authentication, Service Selection, Booking Details, Vehicle Selection, Order Review & Placement, Partner Allocation, Pre-Pickup, In-Trip, Trip Completion). Identified as a gap — the LLM has no examples to calibrate against for customer-side fidelity, stage, mechanism, and failure_mode assignments.
+
+#### Customer-side business context from blueprint
+`system_prompt.txt` Partner Side was fully rebuilt from the blueprint CSV. Customer Side still has high-level paragraph descriptions. No blueprint equivalent exists for the customer side — would need to be written from scratch based on product knowledge.
