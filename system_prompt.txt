@@ -306,25 +306,66 @@ Assign the `cause_fidelity` field based on whether the trigger or condition that
 
 For `pain_only` and `feature_request` rows, use `"N/A"`.
 
+## Support Response
+
+These three fields capture the customer support interaction if one is described in the review. When no customer support interaction is described, set all three to `"N/A"`.
+
+### Summarised Support Response
+One sentence describing what the support agent said or did in response to the user's complaint. Same canonical language rules as `summarised_problem`:
+- Must contain a verb
+- Strip individual evidence (agent names, specific amounts, dates)
+- Preserve structural detail: what action was taken or refused, what policy was cited, what the agent's position was
+- `"N/A"` — no support interaction described in this review
+- `"unknown"` — support is mentioned but their response is not described
+
+### Support Stance
+The customer support agent's position on the complaint.
+
+| Value | When |
+|---|---|
+| `sided_with_user` | Agent agreed the complaint is valid and acted or promised action |
+| `cited_policy` | Agent acknowledged but cited policy as the reason no resolution is possible |
+| `disputed` | Agent pushed back, attributed fault to the user, or refused to engage |
+| `non_committal` | Agent acknowledged receipt but took no clear position — "we'll look into it" with no follow-through |
+| `unknown` | Support mentioned but stance not determinable from the review |
+| `N/A` | No customer support interaction described in this review |
+
+### Support Action
+What the support agent actually did, coded.
+
+| Value | When |
+|---|---|
+| `info_only` | Reiterated information or noted the complaint; no significant action (includes "complaint communicated" or "internally escalated" with no stated outcome) |
+| `fare_adjustment` | Updated fare, waiting time, or distance calculation |
+| `order_change` | Changed an order — location, cancellation, or edit |
+| `account_action` | Changed account status — suspended, reinstated, waived a penalty, or credited the wallet |
+| `mediated_no_resolution` | Attempted mediation between customer and partner; no resolution reached |
+| `mediated_resolved` | Attempted mediation between customer and partner; resolution reached |
+| `unknown` | Support involved but action not determinable from the review |
+| `N/A` | No customer support interaction described in this review |
+
 ## Output Format
 
-**Single problem:**
-{"summarised_problem": "core problem here", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "failure_mode": "not triggered", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known"}
+**Single problem (no support interaction):**
+{"summarised_problem": "core problem here", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "failure_mode": "not triggered", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"}
+
+**Single problem (with support interaction):**
+{"summarised_problem": "core problem here", "fidelity": "pain_and_touchpoint", "journey": "Order Execution", "stage": "coordinate loading", "mechanism": "waiting time compensation", "failure_mode": "not triggered", "team": "LFC", "problem_type": "service", "impact": "financial_loss", "cause_fidelity": "cause_known", "summarised_support_response": "support verified trip timeline and manually credited waiting time compensation to partner's wallet", "support_stance": "sided_with_user", "support_action": "fare_adjustment"}
 
 **Multiple distinct problems (2–3), each cleanly extractable:**
 [
-  {"summarised_problem": "first problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "failure_mode": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."},
-  {"summarised_problem": "second problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "failure_mode": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."}
+  {"summarised_problem": "first problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "failure_mode": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "...", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"},
+  {"summarised_problem": "second problem", "fidelity": "pain_and_touchpoint", "journey": "...", "stage": "...", "mechanism": "...", "failure_mode": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "...", "summarised_support_response": "...", "support_stance": "...", "support_action": "..."}
 ]
 
 **If too vague:**
-{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "insufficient information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"}
 
 **If not actionable:**
-{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "no actionable information", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"}
 
 **If more than 3 problems or vague laundry list:**
-{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A"}
+{"summarised_problem": "multiple problems - to be broken down", "fidelity": "pain_only", "journey": "unknown", "stage": "N/A", "mechanism": "unknown", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "N/A", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"}
 
 **If a feature request:**
-{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "stage": "N/A", "mechanism": "service geographic coverage", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A"}
+{"summarised_problem": "Porter service not available in partner's city", "fidelity": "feature_request", "journey": "unknown", "stage": "N/A", "mechanism": "service geographic coverage", "failure_mode": "N/A", "team": "unknown", "problem_type": "unknown", "impact": "inconvenienced", "cause_fidelity": "N/A", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"}

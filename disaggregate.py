@@ -157,7 +157,7 @@ def disaggregate_one(
             }
         except json.JSONDecodeError as e:
             return {
-                'problems': [{"summarised_problem": "PARSE_ERROR", "fidelity": "unknown", "journey": "unknown", "stage": "unknown", "mechanism": "unknown", "failure_mode": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "unknown"}],
+                'problems': [{"summarised_problem": "PARSE_ERROR", "fidelity": "unknown", "journey": "unknown", "stage": "unknown", "mechanism": "unknown", "failure_mode": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "unknown", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"}],
                 "_raw_response": result_text,
                 "_input_tokens": input_tokens,
                 "_output_tokens": output_tokens,
@@ -166,7 +166,7 @@ def disaggregate_one(
             }
     except Exception as e:
         return {
-            'problems': [{"summarised_problem": "API_ERROR", "fidelity": "unknown", "journey": "unknown", "stage": "unknown", "mechanism": "unknown", "failure_mode": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "unknown"}],
+            'problems': [{"summarised_problem": "API_ERROR", "fidelity": "unknown", "journey": "unknown", "stage": "unknown", "mechanism": "unknown", "failure_mode": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "unknown", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"}],
             "_row_idx": row_idx,
             "_error": f"API error: {str(e)}"
         }
@@ -212,7 +212,7 @@ def process_batch_concurrent(
             except Exception as e:
                 logger.error(f"Task {start_idx + idx} failed: {e}")
                 results[idx] = {
-                    'problems': [{"summarised_problem": "API_ERROR", "fidelity": "unknown", "journey": "unknown", "stage": "unknown", "mechanism": "unknown", "failure_mode": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "unknown"}],
+                    'problems': [{"summarised_problem": "API_ERROR", "fidelity": "unknown", "journey": "unknown", "stage": "unknown", "mechanism": "unknown", "failure_mode": "unknown", "team": "unknown", "problem_type": "unknown", "impact": "unknown", "cause_fidelity": "unknown", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"}],
                     "_row_idx": start_idx + idx,
                     "_error": f"Thread error: {str(e)}"
                 }
@@ -388,6 +388,9 @@ def main():
                     merged['problem_type'] = problem.get('problem_type', 'unknown')
                     merged['impact'] = problem.get('impact', 'unknown')
                     merged['cause_fidelity'] = problem.get('cause_fidelity', 'N/A')
+                    merged['summarised_support_response'] = problem.get('summarised_support_response', 'N/A')
+                    merged['support_stance'] = problem.get('support_stance', 'N/A')
+                    merged['support_action'] = problem.get('support_action', 'N/A')
                     results.append(merged)
 
             # Save checkpoint after each batch

@@ -50,10 +50,12 @@ porter_reviews.py          →  raw CSVs (Play Store reviews)
 │  - Concurrent API calls via ThreadPoolExecutor             │
 │  - Checkpoint/resume capability                            │
 │  - Input: body (narrative summary from batch_summarize)    │
-│  - Output: 10-field structured JSON per problem            │
+│  - Output: 13-field structured JSON per problem            │
 │    - summarised_problem, fidelity, journey, stage,         │
 │      mechanism, failure_mode, team, problem_type,          │
-│      impact, cause_fidelity                                │
+│      impact, cause_fidelity,                               │
+│      summarised_support_response, support_stance,          │
+│      support_action                                        │
 │  - Multi-problem reviews exploded into one row per problem │
 │  - Files: system_prompt.txt, examples.txt                  │
 └─────────────────────────────────────────────────────────────┘
@@ -135,7 +137,7 @@ The disaggregation step (`disaggregate.py`) distills the narrative into a **shor
 ```
 Plus all original columns from the scraped review CSV.
 
-### disaggregate.py output (7 fields)
+### disaggregate.py output (13 fields)
 Gemini returns (via JSON mode) either a single object or an array of objects:
 
 **Single problem:**
@@ -150,15 +152,18 @@ Gemini returns (via JSON mode) either a single object or an array of objects:
   "team": "LFC | Marketplace | TNS | CGE | HSC | unknown",
   "problem_type": "touchpoint_app | touchpoint_ops | service | policy | service/policy | touchpoint_app/service | touchpoint_ops/policy | unknown",
   "impact": "financial_loss | blocked | inconvenienced | informative | unknown",
-  "cause_fidelity": "cause_known | cause_unknown | N/A"
+  "cause_fidelity": "cause_known | cause_unknown | N/A",
+  "summarised_support_response": "one sentence describing what support said or did | N/A | unknown",
+  "support_stance": "sided_with_user | cited_policy | disputed | non_committal | unknown | N/A",
+  "support_action": "info_only | fare_adjustment | order_change | account_action | mediated_no_resolution | mediated_resolved | unknown | N/A"
 }
 ```
 
 **2–3 distinct extractable problems (one row per problem after explode):**
 ```json
 [
-  {"summarised_problem": "...", "fidelity": "...", "journey": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."},
-  {"summarised_problem": "...", "fidelity": "...", "journey": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "..."}
+  {"summarised_problem": "...", "fidelity": "...", "journey": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "...", "summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"},
+  {"summarised_problem": "...", "fidelity": "...", "journey": "...", "team": "...", "problem_type": "...", "impact": "...", "cause_fidelity": "...", "summarised_support_response": "...", "support_stance": "...", "support_action": "..."}
 ]
 ```
 
@@ -169,7 +174,11 @@ Gemini returns (via JSON mode) either a single object or an array of objects:
 - `"summarised_problem": "PARSE_ERROR"` — JSON parse failure
 - `"summarised_problem": "API_ERROR"` — Vertex AI API failure
 
-The `body` column (narrative) is preserved in the output alongside all 7 extracted fields.
+The `body` column (narrative) is preserved in the output alongside all 13 extracted fields.
+
+**Support fields: N/A vs unknown**
+- `N/A` — no customer support interaction described anywhere in the review
+- `unknown` — support is referenced (e.g. "support was poor") but the agent's specific response, stance, or action is not described
 
 ## Problem Definition
 
@@ -233,12 +242,13 @@ Only `pain_and_touchpoint` rows have meaningful journey/team/problem_type/cause_
 ```
 porter-clustering-classification-tickets/   (this folder)
 ├── run_workbench.ipynb         # Run steps 1-3 on Vertex AI Workbench
-├── disaggregate.py             # Step 1: narrative → 7-field structured output (Gemini via Vertex AI)
-├── embed.py                    # Step 2: Embedding (local, structured multi-field text)
+├── disaggregate.py             # Step 1: narrative → 13-field structured output (Gemini via Vertex AI)
+├── embed.py                    # Step 2: Embedding (local, 10 core fields; 3 support fields excluded)
 ├── cluster.py                  # Step 3: UMAP + HDBSCAN (local, supports --prob-threshold)
+├── synthesize.py               # Step 4: per-cluster rich sub-problem synthesis (Gemini via Vertex AI)
 ├── pipeline_utils.py           # Shared utilities
-├── system_prompt.txt           # LLM instructions (Porter-specific, 7-field output, rubric + stage-level business context)
-├── examples.txt                # Few-shot examples (18 Porter-specific examples, 7-field schema)
+├── system_prompt.txt           # LLM instructions (Porter-specific, 13-field output, rubric + stage-level business context)
+├── examples.txt                # Few-shot examples (20 Porter-specific examples, 13-field schema)
 ├── manual_run_guide.md         # Web UI guide for running analysis on ≤200 transcripts (Claude or Gemini)
 ├── gemini_guide.md             # Step-by-step Gemini walkthrough with disaggregation + clustering prompts
 ├── clustering_prompt.txt       # Standalone clustering prompt — open, replace PROBLEMS section, paste into Gemini
@@ -345,7 +355,7 @@ Go to **GCP Console → Vertex AI → Workbench** and click **STOP**. A running 
 - Makes clustering faster and more accurate
 - Preserves semantic relationships
 
-### Why 10 fields instead of 1?
+### Why 13 fields instead of 1?
 - `summarised_problem` is the core clustering text
 - `fidelity` lets you filter to only `pain_and_touchpoint` rows for deep investigation
 - `journey`, `stage`, `team`, `problem_type` enable PM/leadership to quickly route and prioritise clusters without reading every problem statement; `stage` is more granular than `journey` and separates problems that share a journey but occur at different steps
@@ -353,7 +363,11 @@ Go to **GCP Console → Vertex AI → Workbench** and click **STOP**. A running 
 - `failure_mode` is the verb that pairs with mechanism ("not triggered", "incorrectly triggered", "delayed") — together `mechanism` + `failure_mode` uniquely define a cluster; same mechanism + different failure mode = always different clusters, different fixes
 - `impact` lets you triage by severity — `blocked` and `financial_loss` rows surface first
 - `cause_fidelity` signals whether the root cause is known (actionable immediately) or needs investigation
-- All 9 fields are embedded together as a structured string — metadata provides hard structural separation between problems in the same touchpoint area
+- `summarised_support_response` is a one-sentence canonical summary of what the support agent said or did — mirrors the structure of `summarised_problem` but for the support side; `N/A` when no support interaction is described
+- `support_stance` is the agent's position on the complaint (`sided_with_user`, `cited_policy`, `disputed`, `non_committal`) — signals whether support is validating, deflecting, or blaming; useful for identifying systemic support behaviour patterns across clusters
+- `support_action` is a coded enum of what the agent actually did (`info_only`, `fare_adjustment`, `order_change`, `account_action`, `mediated_no_resolution`, `mediated_resolved`) — directly actionable for support quality analysis
+- The 3 support fields are **not embedded** — they pass through to the parquet file as filterable metadata; clustering is driven by the 10 core fields only. This prevents two identical problems from landing in different clusters just because one user mentioned calling support and the other did not
+- The 10 core fields are embedded together as a structured string — metadata provides hard structural separation between problems in the same touchpoint area
 - Multi-problem rows are exploded into one row per problem, so the output is fully flat and filterable
 
 ## Scaling Notes
@@ -635,6 +649,57 @@ Go to **GCP Console → Vertex AI → Workbench** and click **STOP**. A running 
 **What changed:**
 - `gemini_guide.md`: Full rewrite — batch prompt requests CSV rows not JSON; explicit column layout tables at every step; VLOOKUP for body; row_id step before clustering; VLOOKUP for cluster join
 - `clustering_prompt.txt` (new file): Standalone clustering prompt ready to copy-paste; PROBLEMS section at the end as a placeholder
+
+---
+
+### Schema: 3 support fields added; synthesize.py added (Mar 2026)
+
+**Why:** Reviews often describe customer support interactions alongside the core problem. Capturing what support said, their position on the complaint, and what they did provides two new analysis dimensions: (1) support quality analysis — are agents consistently dismissing valid complaints or citing policy? (2) synthesis input — the `summarised_support_response` is available for a future synthesis module to incorporate into cluster-level outputs.
+
+**Design decision — excluded from embedding:** The 3 support fields are not included in `build_embedding_text`. Including them would cause two identical problems to land in different clusters purely because one user mentioned calling support and the other did not. Clustering is driven by the 10 core problem fields; support fields are filterable metadata only.
+
+**What changed:**
+
+#### system_prompt.txt
+- New `## Support Response` section added between Cause Fidelity and Output Format
+- Defines all 3 fields with value tables
+- Output Format updated: all 6 format examples now include the 3 support fields; second single-problem example added showing a populated support interaction
+
+#### examples.txt
+- All 18 existing examples updated with 3 new fields (most `N/A`)
+- Notable populated cases:
+  - Example 3: `unknown` for all 3 — support quality criticised but no specific response described
+  - Example 9: `disputed` / `account_action` / canonical support response — suspension imposed without prior investigation
+  - Example 10 problem 2: `disputed` / `info_only` — support refused to mediate fare discrepancy
+- Example 19 (new): support sides with user, manually credits waiting time compensation → `sided_with_user` / `fare_adjustment`
+- Example 20 (new): support cites policy, cannot reverse suspension → `cited_policy` / `info_only`
+
+#### disaggregate.py
+- 3 error fallback dicts (PARSE_ERROR, API_ERROR, thread error) updated with `"summarised_support_response": "N/A", "support_stance": "N/A", "support_action": "N/A"`
+- Merge loop extended with 3 new `problem.get(...)` lines
+
+#### embed.py
+- No change — support fields are intentionally excluded from `build_embedding_text`
+
+#### synthesize.py (new file)
+- Step 4 of the pipeline: per-cluster rich sub-problem synthesis
+- For each cluster (including noise), passes all `body` narratives to Gemini
+- Gemini identifies distinct sub-scenarios, writes a 2–3 sentence rich problem statement per sub-scenario, and assigns each review to exactly one sub-scenario
+- Output: one row per sub-scenario with `cluster_problem`, `rich_problem`, `count`, `proportion`, `review_ids`, `quality_flag`, `is_noise`, and dominant metadata columns
+- Quality guardrails: `too_short`, `vague_opening`, `insufficient_new_info` flags on `rich_problem`
+- Checkpoint/resume every 10 clusters; `--skip-noise` flag to exclude noise cluster
+
+#### support_action values
+| Value | When |
+|---|---|
+| `info_only` | Reiterated info or noted complaint; no significant action |
+| `fare_adjustment` | Updated fare, waiting time, or distance |
+| `order_change` | Changed an order (location, cancellation, edit) |
+| `account_action` | Changed account status (suspended, reinstated, waived penalty, credited wallet) |
+| `mediated_no_resolution` | Attempted mediation; no resolution reached |
+| `mediated_resolved` | Attempted mediation; resolution reached |
+| `unknown` | Support involved but action not determinable |
+| `N/A` | No support interaction in this review |
 
 ---
 
