@@ -79,6 +79,10 @@ porter_reviews.py          →  raw CSVs (Play Store reviews)
 │  - No need to specify number of clusters                   │
 │  - Outliers marked as noise (-1)                           │
 │  - Tunable via --min-cluster-size and --prob-threshold     │
+│  - Optional --stratify-by: run UMAP+HDBSCAN independently  │
+│    per stratum, then merge with globally unique IDs        │
+│  - compare_clusters.py: side-by-side purity + stats for   │
+│    multiple cluster output files                           │
 └─────────────────────────────────────────────────────────────┘
            │
            ▼
@@ -241,10 +245,11 @@ Only `pain_and_touchpoint` rows have meaningful journey/team/problem_type/cause_
 
 ```
 porter-clustering-classification-tickets/   (this folder)
-├── run_workbench.ipynb         # Run steps 1-3 on Vertex AI Workbench
+├── run_workbench.ipynb         # Run steps 1-3 on Vertex AI Workbench (includes experiment section 6b)
 ├── disaggregate.py             # Step 1: narrative → 13-field structured output (Gemini via Vertex AI)
 ├── embed.py                    # Step 2: Embedding (local, 10 core fields; 3 support fields excluded)
-├── cluster.py                  # Step 3: UMAP + HDBSCAN (local, supports --prob-threshold)
+├── cluster.py                  # Step 3: UMAP + HDBSCAN (local); --stratify-by for per-stratum clustering
+├── compare_clusters.py         # Utility: compare cluster outputs — purity, noise%, size distribution
 ├── synthesize.py               # Step 4: per-cluster rich sub-problem synthesis (Gemini via Vertex AI)
 ├── pipeline_utils.py           # Shared utilities
 ├── system_prompt.txt           # LLM instructions (Porter-specific, 13-field output, rubric + stage-level business context)
@@ -288,10 +293,22 @@ python3 disaggregate.py \
 # Step 2: Embed (runs locally)
 python3 embed.py data/disaggregated.parquet data/embedded.parquet
 
-# Step 3: Cluster (runs locally)
-python3 cluster.py data/embedded.parquet data/clustered.parquet \
+# Step 3: Cluster (runs locally) — baseline (global, no stratification)
+python3 cluster.py data/embedded.parquet data/clustered_baseline.csv \
     --min-cluster-size 15 \
     --prob-threshold 0.0
+
+# Step 3 (stratified variants — for experiment/comparison)
+python3 cluster.py data/embedded.parquet data/clustered_team_fm.csv \
+    --min-cluster-size 15 --stratify-by team failure_mode
+python3 cluster.py data/embedded.parquet data/clustered_fm_mech.csv \
+    --min-cluster-size 15 --stratify-by failure_mode mechanism
+
+# Compare outputs
+python3 compare_clusters.py \
+    data/clustered_baseline.csv \
+    data/clustered_team_fm.csv \
+    data/clustered_fm_mech.csv
 ```
 
 ### Run on Vertex AI Workbench
@@ -705,28 +722,35 @@ Go to **GCP Console → Vertex AI → Workbench** and click **STOP**. A running 
 
 ## Pending Decisions & Next Steps
 
-### Decided — not yet implemented
+### Partially implemented
 
-#### 1. Pre-stratified clustering in cluster.py
+#### 1. Stratified clustering in cluster.py
 
-**Decision reached:** Stratify by `fidelity` first (hard pre-filter — never mix categories), then within `pain_and_touchpoint` stratify by `team × failure_mode`.
+**Status:** `--stratify-by` argument implemented. Fidelity pre-filter and adaptive mechanism normalization not yet implemented.
 
-**Rationale:**
+**What is implemented:**
+- `--stratify-by COL [COL ...]`: accepts any list of column names; runs UMAP+HDBSCAN independently per stratum; merges with globally unique cluster IDs; adds `stratum` column to output
+- Common invocations: `--stratify-by team failure_mode`, `--stratify-by failure_mode mechanism`, `--stratify-by team failure_mode mechanism`
+- Strata below `min_cluster_size * 2` rows are skipped (all noise — no UMAP on too-small groups)
+- `compare_clusters.py`: side-by-side comparison of purity (journey / team / failure_mode), noise %, cluster count, and size distribution
+
+**What is not yet implemented:**
+- Fidelity pre-filter (hard boundary — pain_only, pain_and_touchpoint, feature_request never mixed)
+- Adaptive mechanism normalization for large strata (>~2000 rows): run a second-pass clustering on mechanism strings to normalise free-text before using as stratification key
+
+**Original rationale (still valid for future work):**
 - `fidelity`: hard categorical boundary — pain_only, pain_and_touchpoint, feature_request need different treatment
 - `team`: hard ownership boundary — different team = different fixer
-- `failure_mode`: clean enum that directly encodes "same type of fix needed" — different failure mode = always different cluster even on the same mechanism
-- `mechanism` was considered but rejected as a stratification key: it is free-text, so exact-string matching creates spurious splits ("waiting time compensation" vs "waiting time charges" → two strata, should be one)
-- `stage` was considered but rejected: ~40–50% of rows have `stage: N/A` or `unknown`, too many unknowns for reliable stratification
-- `journey` is partially redundant with `team` (most journeys are owned by one team)
+- `failure_mode`: clean enum that directly encodes "same type of fix needed"
+- `mechanism` is free-text so exact-string matching creates spurious splits — requires normalization pass first
+- `stage` was rejected: ~40–50% of rows have `stage: N/A` or `unknown`
 
 **Scale-dependent key:**
-| Dataset size | Stratification key |
+| Dataset size | Recommended stratification |
 |---|---|
-| ≤500 rows | `fidelity` pre-filter, then cluster by `team` |
-| 500–5K rows | `fidelity` pre-filter, then cluster by `team × failure_mode` |
-| 5K+ rows | `fidelity` pre-filter, then cluster by `team × failure_mode`, optionally add `journey` |
-
-**Files to change:** `cluster.py` — add `--stratify` flag (default on); loop over strata, run UMAP+HDBSCAN per stratum, concatenate results
+| ≤500 rows | `--stratify-by team` |
+| 500–5K rows | `--stratify-by team failure_mode` |
+| 5K+ rows | `--stratify-by team failure_mode` (add mechanism normalization for strata >2000 rows) |
 
 ---
 
@@ -789,3 +813,33 @@ Currently zero examples covering customer-side journeys (Authentication, Service
 
 #### Customer-side business context from blueprint
 `system_prompt.txt` Partner Side was fully rebuilt from the blueprint CSV. Customer Side still has high-level paragraph descriptions. No blueprint equivalent exists for the customer side — would need to be written from scratch based on product knowledge.
+
+---
+
+### Stratified clustering experiment: --stratify-by added to cluster.py; compare_clusters.py added (Mar 2026)
+
+**Why:** Before committing to a full stratified clustering architecture, the experiment needs to be run empirically — baseline vs `team × failure_mode` vs `failure_mode × mechanism` — and the output CSVs compared on cluster purity, noise %, and size distribution.
+
+**What changed:**
+
+#### cluster.py
+- Refactored: UMAP+HDBSCAN logic extracted into `run_umap_hdbscan()` helper function; behaviour in global (no stratification) mode is identical to before
+- Added `--stratify-by COL [COL ...]` argument: runs UMAP+HDBSCAN independently per stratum defined by the given columns; globally unique cluster IDs via offset; `stratum` column added to output
+- Strata below `min_cluster_size * 2` rows are skipped (all marked noise)
+- Updated docstring with example invocations for all three common stratification keys
+
+#### compare_clusters.py (new file)
+- Accepts two or more CSV/Parquet cluster output files
+- Reports per file: cluster count, noise %, size distribution (min/median/mean/max/top-5), and mean purity per cluster across `journey`, `team`, `failure_mode`, `fidelity`
+- Purity metric: for each cluster, fraction of rows sharing the dominant value of the column; mean across all clusters. Higher = more homogeneous clusters.
+- Summary table at the bottom: all files in one row each for quick comparison
+
+#### run_workbench.ipynb
+- Config cell: added `STRATIFY_BY = ""` variable with comments on common options
+- Config print: added `Stratify by` line
+- Step 3a file list: added `compare_clusters.py`
+- File check code (cell-6): added `compare_clusters.py` to required files list
+- Step 6 cluster cell: replaced `!python3` magic with `subprocess.run` so `STRATIFY_BY` is passed dynamically
+- Section 6b (new, optional): runs all three clustering variants and calls `compare_clusters.py`
+- Terminal commands: added stratified variant commands
+- Step 8 push: automatically pushes experiment files (`clustered_baseline.csv`, `clustered_team_fm.csv`, `clustered_fm_mech.csv`) if they exist
