@@ -37,11 +37,24 @@ The input file must have a `body` column containing the English review narrative
 
 ## Full run — copy and paste in order
 
-### 0. Open Cloud Shell and navigate to the project
+### 0. Open Cloud Shell, start a tmux session, and navigate to the project
+
+Always start with tmux. If your browser tab closes or your connection drops, the
+pipeline keeps running. Reattach at any time with `tmux attach -t pipeline`.
 
 ```bash
+tmux new -s pipeline
 cd ~/poc
 ```
+
+> **tmux basics:**
+> - Detach (leave running in background): `Ctrl+B` then `D`
+> - Reattach after reconnecting to Cloud Shell: `tmux attach -t pipeline`
+> - List sessions: `tmux ls`
+>
+> No downside to using it. The only limit is Cloud Shell's VM itself — if it sits
+> completely idle for ~60 min it may be reclaimed. If that happens,
+> disaggregate.py's `--resume` flag picks up from the last checkpoint.
 
 ---
 
