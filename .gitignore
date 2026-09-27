@@ -1,5 +1,6 @@
 # Data files - may contain sensitive customer information
-data/
+data/*
+!data/porter_partner_reviews_apr_aug_20260927_clean.csv
 
 # Checkpoints
 *.checkpoint.json
